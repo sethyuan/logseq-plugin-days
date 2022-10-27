@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@logseq/libs": "^0.0.10",
-    "immer": "^9.0.15",
+    "date-fns": "^2.29.3",
     "logseq-l10n": "^0.2.0",
     "preact": "^10.11.2",
     "reactutils": "^5.12.0"

@@ -1,5 +1,7 @@
 import "@logseq/libs"
 import { setup } from "logseq-l10n"
+import { render } from "preact"
+import Calendar from "./comps/Calendar"
 import zhCN from "./translations/zh-CN.json"
 
 const routeOffHooks = {}
@@ -18,6 +20,16 @@ async function main() {
     const pos = input.selectionStart - 2
     input.setSelectionRange(pos, pos)
   })
+
+  // NOTE: enable when settings schema can support object arrays.
+  // logseq.useSettingsSchema([
+  //   {
+  //     key: "weekStart",
+  //     type: "number",
+  //     default: 0,
+  //     description: t("0 is Sunday, 1 is Monday, etc."),
+  //   },
+  // ])
 
   logseq.beforeunload(() => {
     for (const off of Object.values(routeOffHooks)) {
