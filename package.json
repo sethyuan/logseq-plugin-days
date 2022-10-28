@@ -14,6 +14,7 @@
     "@logseq/libs": "^0.0.10",
     "date-fns": "^2.29.3",
     "logseq-l10n": "^0.2.0",
+    "marked": "^4.1.1",
     "preact": "^10.11.2",
     "reactutils": "^5.12.0"
   },

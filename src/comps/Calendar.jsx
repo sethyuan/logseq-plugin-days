@@ -14,7 +14,7 @@ import {
   startOfMonth,
 } from "date-fns"
 import { useEffect, useState } from "preact/hooks"
-import { getSettingProps } from "../libs/utils"
+import { dashToCamel, getSettingProps, parseContent } from "../libs/utils"
 
 const UNITS = new Set(["y", "m", "w", "d"])
 
@@ -47,11 +47,27 @@ export default function Calendar({ slot, query }) {
   }, [query, month])
 
   async function findPrev() {
-    // TODO
+    const monthStart = startOfMonth(month).getTime()
+    let candidate = -Infinity
+    for (const day of days.keys()) {
+      if (day < monthStart && day > candidate) {
+        candidate = day
+      }
+    }
+    console.log("prev", candidate)
+    setMonth(candidate)
   }
 
   async function findNext() {
-    // TODO
+    const monthEnd = endOfMonth(month).getTime()
+    let candidate = Infinity
+    for (const day of days.keys()) {
+      if (day > monthEnd && day < candidate) {
+        candidate = day
+      }
+    }
+    console.log("next", candidate)
+    setMonth(candidate)
   }
 
   function prevMonth() {
@@ -73,10 +89,12 @@ async function getDays(q, month) {
     return await getOnlySpecials(month, preferredDateFormat)
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
-    return await getPageAndSpecials(name, month, preferredDateFormat)
+    const page = await logseq.Editor.getPage(name)
+    return await getBlockAndSpecials(page, month, preferredDateFormat)
   } else if (q.startsWith("((")) {
     const uuid = q.substring(2, q.length - 2)
-    return await getBlockAndSpecials(uuid, month, preferredDateFormat)
+    const block = await logseq.Editor.getBlock(uuid)
+    return await getBlockAndSpecials(block, month, preferredDateFormat)
   }
 }
 
@@ -95,20 +113,105 @@ async function getOnlySpecials(month, dateFormat) {
       prop.repeatEndAt,
     )
   }
+  return days
+}
+
+async function getBlockAndSpecials(block, month, dateFormat) {
+  const props = getSettingProps()
+  const days = new Map()
+  await findDays(days, block.uuid, dateFormat)
+  for (const prop of props) {
+    await findPropertyDaysForBlock(
+      block,
+      days,
+      dateFormat,
+      month,
+      prop.name,
+      prop.color,
+      prop.repeat,
+      prop.repeatCount,
+      prop.repeatEndAt,
+    )
+  }
   console.log(days)
   return days
 }
 
-async function getPageAndSpecials(name, month) {
-  // TODO
-  const props = logseq.settings?.properties ?? []
-  return null
+async function findDays(days, uuid, dateFormat) {
+  let journals
+  try {
+    journals = (
+      await logseq.DB.datascriptQuery(
+        `[:find (pull ?j [:block/original-name])
+        :in $ ?uuid
+        :where
+        [?t :block/uuid ?uuid]
+        [?b :block/refs ?t]
+        [?b :block/page ?j]
+        [?j :block/journal? true]]`,
+        `#uuid "${uuid}"`,
+      )
+    ).map(([item]) => item)
+  } catch (err) {
+    console.error(err)
+    return
+  }
+
+  for (const journal of journals) {
+    let date
+    try {
+      date = parse(journal["original-name"], dateFormat, new Date())
+      if (!isValid(date)) continue
+    } catch (err) {
+      // ignore this block because it has no valid date value.
+      continue
+    }
+    days.set(date.getTime(), null)
+  }
 }
 
-async function getBlockAndSpecials(uuid, month) {
-  // TODO
-  const props = logseq.settings?.properties ?? []
-  return null
+async function findPropertyDaysForBlock(
+  block,
+  days,
+  dateFormat,
+  month,
+  name,
+  color,
+  repeat,
+  repeatCount,
+  repeatEndAt,
+) {
+  const value = block.properties?.[dashToCamel(name)]?.[0]?.replace(
+    /^\[\[(.*)\]\]\s*$/,
+    "$1",
+  )
+  let date
+  try {
+    date = parse(value, dateFormat, new Date())
+    if (!isValid(date)) return
+  } catch (err) {
+    // ignore this block because it has no valid date value.
+    return
+  }
+
+  const dayData = {
+    name: block.originalName ?? (await parseContent(block.content)),
+    color,
+  }
+
+  days.set(date.getTime(), dayData)
+
+  if (repeat) {
+    findRecurrenceDays(
+      days,
+      repeat,
+      repeatCount,
+      repeatEndAt,
+      date,
+      month,
+      dayData,
+    )
+  }
 }
 
 async function findPropertyDays(
@@ -153,14 +256,14 @@ async function findPropertyDays(
       name:
         block.parent.id === block.page.id
           ? (await logseq.Editor.getPage(block.page.id)).originalName
-          : block.content,
+          : await parseContent(block.content),
       color,
     }
 
-    days.set(date, dayData)
+    days.set(date.getTime(), dayData)
 
     if (repeat) {
-      await findRecurrenceDays(
+      findRecurrenceDays(
         days,
         repeat,
         repeatCount,
@@ -173,7 +276,7 @@ async function findPropertyDays(
   }
 }
 
-async function findRecurrenceDays(
+function findRecurrenceDays(
   days,
   repeat,
   repeatCount,
@@ -191,6 +294,7 @@ async function findRecurrenceDays(
 
   let count = (differenceInUnit[unit](monthStart, date) / quantity) >> 0
   let recurred = addUnit[unit](date, quantity * count)
+  days.set(recurred.getTime(), dayData)
   while (
     compareAsc(recurred, monthEnd) < 0 &&
     count < repeatCount &&
@@ -198,12 +302,6 @@ async function findRecurrenceDays(
   ) {
     recurred = addUnit[unit](recurred, quantity)
     count++
-
-    if (
-      compareAsc(recurred, monthStart) >= 0 &&
-      compareAsc(recurred, monthEnd) <= 0
-    ) {
-      days.set(recurred, dayData)
-    }
+    days.set(recurred.getTime(), dayData)
   }
 }
