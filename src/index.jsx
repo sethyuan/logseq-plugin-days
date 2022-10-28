@@ -1,5 +1,5 @@
 import "@logseq/libs"
-import { setup } from "logseq-l10n"
+import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Calendar from "./comps/Calendar"
 import zhCN from "./translations/zh-CN.json"
@@ -21,15 +21,219 @@ async function main() {
     input.setSelectionRange(pos, pos)
   })
 
-  // NOTE: enable when settings schema can support object arrays.
-  // logseq.useSettingsSchema([
-  //   {
-  //     key: "weekStart",
-  //     type: "number",
-  //     default: 0,
-  //     description: t("0 is Sunday, 1 is Monday, etc."),
-  //   },
-  // ])
+  logseq.useSettingsSchema([
+    {
+      key: "weekStart",
+      type: "number",
+      default: 0,
+      description: t("0 is Sunday, 1 is Monday, etc."),
+    },
+    {
+      key: "property1",
+      type: "heading",
+      title: t("Property 1"),
+    },
+    {
+      key: "name1",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color1",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat1",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount1",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt1",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property2",
+      type: "heading",
+      title: t("Property 2"),
+    },
+    {
+      key: "name2",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color2",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat2",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount2",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt2",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property3",
+      type: "heading",
+      title: t("Property 3"),
+    },
+    {
+      key: "name3",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color3",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat3",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount3",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt3",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property4",
+      type: "heading",
+      title: t("Property 4"),
+    },
+    {
+      key: "name4",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color4",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat4",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount4",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt4",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property5",
+      type: "heading",
+      title: t("Property 5"),
+    },
+    {
+      key: "name5",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color5",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat5",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount5",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt5",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+  ])
 
   logseq.beforeunload(() => {
     for (const off of Object.values(routeOffHooks)) {

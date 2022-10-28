@@ -1,3 +1,13 @@
 {
-  "0 is Sunday, 1 is Monday, etc.": "0 是周日，1 是周一，以此类推。"
+  "0 is Sunday, 1 is Monday, etc.": "0 是周日，1 是周一，以此类推。",
+  "Name of the property containing a date as value.": "一个值为日期的属性的名字。",
+  "Highlight color.": "高亮颜色。",
+  "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.": "以天（d）、周（w）、月（m）或年（y）计算的重复间隔，例如 2w。如果没有重复请留空。",
+  "End the repeat after the specified times. -1 means to repeat endlessly.": "再重复指定次数后停止重复。-1 代表永远重复下去。",
+  "End the repeat at the specified date.": "在指定日期后结束重复。",
+  "Property 1": "属性 1",
+  "Property 2": "属性 2",
+  "Property 3": "属性 3",
+  "Property 4": "属性 4",
+  "Property 5": "属性 5"
 }

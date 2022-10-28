@@ -4,14 +4,33 @@ import {
   addWeeks,
   addYears,
   compareAsc,
+  differenceInDays,
+  differenceInMonths,
+  differenceInWeeks,
+  differenceInYears,
   endOfMonth,
   isValid,
   parse,
   startOfMonth,
 } from "date-fns"
 import { useEffect, useState } from "preact/hooks"
+import { getSettingProps } from "../libs/utils"
 
 const UNITS = new Set(["y", "m", "w", "d"])
+
+const addUnit = {
+  y: addYears,
+  m: addMonths,
+  w: addWeeks,
+  d: addDays,
+}
+
+const differenceInUnit = {
+  y: differenceInYears,
+  m: differenceInMonths,
+  w: differenceInWeeks,
+  d: differenceInDays,
+}
 
 logseq.provideStyle(`
 `)
@@ -49,29 +68,31 @@ export default function Calendar({ slot, query }) {
 }
 
 async function getDays(q, month) {
+  const { preferredDateFormat } = await logseq.App.getUserConfigs()
   if (!q) {
-    return await getOnlySpecials(month)
+    return await getOnlySpecials(month, preferredDateFormat)
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
-    return await getPageAndSpecials(name, month)
+    return await getPageAndSpecials(name, month, preferredDateFormat)
   } else if (q.startsWith("((")) {
     const uuid = q.substring(2, q.length - 2)
-    return await getBlockAndSpecials(uuid, month)
+    return await getBlockAndSpecials(uuid, month, preferredDateFormat)
   }
 }
 
-async function getOnlySpecials(month) {
-  const { preferredDateFormat } = await logseq.App.getUserConfigs()
-  const props = logseq.settings?.properties ?? []
+async function getOnlySpecials(month, dateFormat) {
+  const props = getSettingProps()
   const days = new Map()
   for (const prop of props) {
     await findPropertyDays(
       days,
-      preferredDateFormat,
+      dateFormat,
       month,
       prop.name,
       prop.color,
-      prop.recurrence,
+      prop.repeat,
+      prop.repeatCount,
+      prop.repeatEndAt,
     )
   }
   console.log(days)
@@ -96,7 +117,9 @@ async function findPropertyDays(
   month,
   name,
   color,
-  recurrence,
+  repeat,
+  repeatCount,
+  repeatEndAt,
 ) {
   let blocks
   try {
@@ -136,38 +159,51 @@ async function findPropertyDays(
 
     days.set(date, dayData)
 
-    if (recurrence) {
-      await findRecurrenceDays(days, recurrence, date, month, dayData)
+    if (repeat) {
+      await findRecurrenceDays(
+        days,
+        repeat,
+        repeatCount,
+        repeatEndAt,
+        date,
+        month,
+        dayData,
+      )
     }
   }
 }
 
-async function findRecurrenceDays(days, recurrence, date, month, dayData) {
-  const quantity = +recurrence.substring(0, recurrence.length - 1)
-  const unit = recurrence[recurrence.length - 1]
+async function findRecurrenceDays(
+  days,
+  repeat,
+  repeatCount,
+  repeatEndAt,
+  date,
+  month,
+  dayData,
+) {
+  const quantity = +repeat.substring(0, repeat.length - 1)
+  const unit = repeat[repeat.length - 1]
+  if (isNaN(quantity) || !UNITS.has(unit)) return
   const monthStart = startOfMonth(month)
   const monthEnd = endOfMonth(month)
-  if (isNaN(quantity) || !UNITS.has(unit)) return
+  if (compareAsc(repeatEndAt, monthStart) < 0) return
 
-  let ret = date
-  while (compareAsc(ret, monthEnd) < 0) {
-    switch (unit) {
-      case "y":
-        ret = addYears(ret, quantity)
-        break
-      case "m":
-        ret = addMonths(ret, quantity)
-        break
-      case "w":
-        ret = addWeeks(ret, quantity)
-        break
-      case "d":
-        ret = addDays(ret, quantity)
-        break
-    }
+  let count = (differenceInUnit[unit](monthStart, date) / quantity) >> 0
+  let recurred = addUnit[unit](date, quantity * count)
+  while (
+    compareAsc(recurred, monthEnd) < 0 &&
+    count < repeatCount &&
+    compareAsc(recurred, repeatEndAt) < 0
+  ) {
+    recurred = addUnit[unit](recurred, quantity)
+    count++
 
-    if (compareAsc(ret, monthStart) >= 0 && compareAsc(ret, monthEnd) <= 0) {
-      days.set(ret, dayData)
+    if (
+      compareAsc(recurred, monthStart) >= 0 &&
+      compareAsc(recurred, monthEnd) <= 0
+    ) {
+      days.set(recurred, dayData)
     }
   }
 }
