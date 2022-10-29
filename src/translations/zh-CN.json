@@ -1,5 +1,4 @@
 {
-  "0 is Sunday, 1 is Monday, etc.": "0 是周日，1 是周一，以此类推。",
   "Name of the property containing a date as value.": "一个值为日期的属性的名字。",
   "Highlight color.": "高亮颜色。",
   "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.": "以天（d）、周（w）、月（m）或年（y）计算的重复间隔，例如 2w。如果没有重复请留空。",

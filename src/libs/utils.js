@@ -77,3 +77,11 @@ export async function parseContent(content) {
 
   return content.trim()
 }
+
+export function mapRange(from, to, mapper) {
+  const ret = new Array(to)
+  for (let i = from; i < to; i++) {
+    ret[i] = mapper(i)
+  }
+  return ret
+}

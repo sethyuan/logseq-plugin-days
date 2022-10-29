@@ -3,45 +3,28 @@ import {
   addMonths,
   addWeeks,
   addYears,
-  compareAsc,
   differenceInDays,
   differenceInMonths,
   differenceInWeeks,
   differenceInYears,
   endOfMonth,
+  format,
+  isBefore,
   isValid,
   parse,
   startOfMonth,
 } from "date-fns"
 import { useEffect, useState } from "preact/hooks"
 import { dashToCamel, getSettingProps, parseContent } from "../libs/utils"
+import CalendarView from "./CalendarView"
 
-const UNITS = new Set(["y", "m", "w", "d"])
-
-const addUnit = {
-  y: addYears,
-  m: addMonths,
-  w: addWeeks,
-  d: addDays,
-}
-
-const differenceInUnit = {
-  y: differenceInYears,
-  m: differenceInMonths,
-  w: differenceInWeeks,
-  d: differenceInDays,
-}
-
-logseq.provideStyle(`
-`)
-
-export default function Calendar({ slot, query }) {
+export default function Calendar({ query, weekStart, locale, dateFormat }) {
   const [month, setMonth] = useState(() => new Date())
   const [days, setDays] = useState(null)
 
   useEffect(() => {
     ;(async () => {
-      const days = await getDays(query, month)
+      const days = await getDays(query, month, dateFormat)
       setDays(days)
     })()
   }, [query, month])
@@ -78,23 +61,57 @@ export default function Calendar({ slot, query }) {
     setMonth((m) => addMonths(m, 1))
   }
 
+  function gotoJournal(d) {
+    const pageDate = new Date(month.getFullYear(), month.getMonth(), d)
+    const pageName = format(pageDate, dateFormat)
+    logseq.Editor.scrollToBlockInPage(pageName)
+  }
+
   if (days == null) return null
 
-  return null
+  return (
+    <CalendarView
+      weekStart={weekStart}
+      locale={locale}
+      data={days}
+      month={month}
+      onMonthChange={setMonth}
+      onPrevMonth={prevMonth}
+      onNextMonth={nextMonth}
+      onPrevRef={findPrev}
+      onNextRef={findNext}
+      onGoto={gotoJournal}
+    />
+  )
 }
 
-async function getDays(q, month) {
-  const { preferredDateFormat } = await logseq.App.getUserConfigs()
+const UNITS = new Set(["y", "m", "w", "d"])
+
+const addUnit = {
+  y: addYears,
+  m: addMonths,
+  w: addWeeks,
+  d: addDays,
+}
+
+const differenceInUnit = {
+  y: differenceInYears,
+  m: differenceInMonths,
+  w: differenceInWeeks,
+  d: differenceInDays,
+}
+
+async function getDays(q, month, dateFormat) {
   if (!q) {
-    return await getOnlySpecials(month, preferredDateFormat)
+    return await getOnlySpecials(month, dateFormat)
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
     const page = await logseq.Editor.getPage(name)
-    return await getBlockAndSpecials(page, month, preferredDateFormat)
+    return await getBlockAndSpecials(page, month, dateFormat)
   } else if (q.startsWith("((")) {
     const uuid = q.substring(2, q.length - 2)
     const block = await logseq.Editor.getBlock(uuid)
-    return await getBlockAndSpecials(block, month, preferredDateFormat)
+    return await getBlockAndSpecials(block, month, dateFormat)
   }
 }
 
@@ -133,7 +150,6 @@ async function getBlockAndSpecials(block, month, dateFormat) {
       prop.repeatEndAt,
     )
   }
-  console.log(days)
   return days
 }
 
@@ -290,18 +306,17 @@ function findRecurrenceDays(
   if (isNaN(quantity) || !UNITS.has(unit)) return
   const monthStart = startOfMonth(month)
   const monthEnd = endOfMonth(month)
-  if (compareAsc(repeatEndAt, monthStart) < 0) return
 
-  let count = (differenceInUnit[unit](monthStart, date) / quantity) >> 0
-  let recurred = addUnit[unit](date, quantity * count)
+  let times = (differenceInUnit[unit](monthStart, date) / quantity) >> 0
+  let recurred = addUnit[unit](date, quantity * times)
   days.set(recurred.getTime(), dayData)
   while (
-    compareAsc(recurred, monthEnd) < 0 &&
-    count < repeatCount &&
-    compareAsc(recurred, repeatEndAt) < 0
+    isBefore(recurred, monthEnd) &&
+    times < repeatCount &&
+    isBefore(recurred, repeatEndAt)
   ) {
     recurred = addUnit[unit](recurred, quantity)
-    count++
+    times++
     days.set(recurred.getTime(), dayData)
   }
 }

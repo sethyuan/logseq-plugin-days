@@ -1,4 +1,6 @@
 import "@logseq/libs"
+import { setDefaultOptions } from "date-fns"
+import { zhCN as dateZhCN } from "date-fns/locale"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Calendar from "./comps/Calendar"
@@ -11,6 +13,8 @@ const DYNAMIC = "*"
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
+  provideStyles()
+
   logseq.App.onMacroRendererSlotted(daysRenderer)
 
   logseq.Editor.registerSlashCommand("Days", async () => {
@@ -22,12 +26,6 @@ async function main() {
   })
 
   logseq.useSettingsSchema([
-    {
-      key: "weekStart",
-      type: "number",
-      default: 0,
-      description: t("0 is Sunday, 1 is Monday, etc."),
-    },
     {
       key: "property1",
       type: "heading",
@@ -304,8 +302,104 @@ async function getCurrentPageName() {
   return page && `[[${page.name}]]`
 }
 
-function renderCalendar(id, q) {
-  render(<Calendar slot={id} query={q} />, parent.document.getElementById(id))
+async function renderCalendar(id, q) {
+  const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
+    await logseq.App.getUserConfigs()
+  const weekStart = (preferredStartOfWeek + 1) % 7
+  setDefaultOptions({
+    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
+    weekStartsOn: weekStart,
+  })
+  render(
+    <Calendar
+      query={q}
+      weekStart={weekStart}
+      locale={preferredLanguage}
+      dateFormat={preferredDateFormat}
+    />,
+    parent.document.getElementById(id),
+  )
+}
+
+function provideStyles() {
+  logseq.provideStyle(`
+    .kef-days-calendar {
+      background-color: var(--ls-primary-background-color);
+    }
+    .kef-days-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kef-days-date {
+      flex: 0 0 auto;
+      font-size: 1.4em;
+      font-weight: 500;
+      line-height: 2;
+    }
+    .kef-days-span {
+      flex: 1;
+    }
+    .kef-days-controls {
+      flex: 0 0 auto;
+      font-size: 0.9em;
+    }
+    .kef-days-month-view {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: auto;
+      grid-auto-rows: 1fr;
+      gap: 7px;
+    }
+    .kef-days-weekday {
+      text-align: center;
+    }
+    .kef-days-day {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      overflow: hidden;
+      width: 4ch;
+    }
+    .kef-days-num {
+      width: 31px;
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+    }
+    .kef-days-num:hover {
+      color: var(--ls-active-secondary-color);
+    }
+    .kef-days-today {
+      color: var(--ls-tag-text-hover-color);
+      background-color: var(--ls-active-primary-color);
+    }
+    .kef-days-today:hover {
+      color: var(--ls-tag-text-hover-color);
+    }
+    .kef-days-referred::after {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--ls-tag-text-hover-color);
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .kef-days-prop {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 0.8em;
+    }
+  `)
 }
 
 logseq.ready(main).catch(console.error)
