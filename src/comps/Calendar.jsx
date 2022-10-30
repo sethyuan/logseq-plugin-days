@@ -160,7 +160,6 @@ async function getBlockAndSpecials(block, month, dateFormat) {
       prop.repeatEndAt,
     )
   }
-  console.log(days)
   return days
 }
 
@@ -211,38 +210,41 @@ async function findPropertyDaysForBlock(
   repeatCount,
   repeatEndAt,
 ) {
-  const value = block.properties?.[dashToCamel(name)]?.[0]?.replace(
-    /^\[\[(.*)\]\]\s*$/,
-    "$1",
-  )
-  let date
-  try {
-    date = parse(value, dateFormat, new Date())
-    if (!isValid(date)) return
-  } catch (err) {
-    // ignore this block because it has no valid date value.
-    return
-  }
-
-  const ts = date.getTime()
-  const properties = getProperties(days, ts)
   const dayData = {
     name: block.originalName ?? (await parseContent(block.content)),
     color,
     jumpKey: block.name ?? block.uuid,
   }
-  properties.push(dayData)
 
-  if (repeat) {
-    findRecurrenceDays(
-      days,
-      repeat,
-      repeatCount,
-      repeatEndAt,
-      date,
-      month,
-      dayData,
-    )
+  const values = block.properties?.[dashToCamel(name)]
+  if (values) {
+    for (let value of values) {
+      value = value.replace(/^\[\[(.*)\]\]\s*$/, "$1")
+      let date
+      try {
+        date = parse(value, dateFormat, new Date())
+        if (!isValid(date)) return
+      } catch (err) {
+        // ignore this block because it has no valid date value.
+        return
+      }
+
+      const ts = date.getTime()
+      const properties = getProperties(days, ts)
+      properties.push(dayData)
+
+      if (repeat) {
+        findRecurrenceDays(
+          days,
+          repeat,
+          repeatCount,
+          repeatEndAt,
+          date,
+          month,
+          dayData,
+        )
+      }
+    }
   }
 }
 
@@ -274,16 +276,6 @@ async function findPropertyDays(
     return
   }
   for (const block of blocks) {
-    const value = block.properties[name]?.[0].replace(/^\[\[(.*)\]\]\s*$/, "$1")
-    let date
-    try {
-      date = parse(value, dateFormat, new Date())
-      if (!isValid(date)) continue
-    } catch (err) {
-      // ignore this block because it has no valid date value.
-      continue
-    }
-
     const page =
       block.parent.id === block.page.id
         ? await logseq.Editor.getPage(block.page.id)
@@ -297,21 +289,38 @@ async function findPropertyDays(
       jumpKey: block.parent.id === block.page.id ? page.name : block.uuid,
     }
 
-    const ts = date.getTime()
-    const properties = getProperties(days, ts)
-    properties.push(dayData)
+    const values = block.properties[name]
+    if (values) {
+      for (let value of values) {
+        value = value.replace(/^\[\[(.*)\]\]\s*$/, "$1")
+        let date
+        try {
+          date = parse(value, dateFormat, new Date())
+          if (!isValid(date)) continue
+        } catch (err) {
+          // ignore this block because it has no valid date value.
+          continue
+        }
 
-    if (repeat) {
-      findRecurrenceDays(
-        days,
-        repeat,
-        repeatCount,
-        repeatEndAt,
-        date,
-        month,
-        dayData,
-      )
+        const ts = date.getTime()
+        const properties = getProperties(days, ts)
+        properties.push(dayData)
+
+        if (repeat) {
+          findRecurrenceDays(
+            days,
+            repeat,
+            repeatCount,
+            repeatEndAt,
+            date,
+            month,
+            dayData,
+          )
+        }
+      }
     }
+
+    const value = block.properties[name]?.[0].replace(/^\[\[(.*)\]\]\s*$/, "$1")
   }
 }
 

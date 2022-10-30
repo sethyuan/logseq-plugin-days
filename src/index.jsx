@@ -19,7 +19,6 @@ async function main() {
 
   logseq.Editor.registerSlashCommand("Days", async () => {
     await logseq.Editor.insertAtEditingCursor("{{renderer :days}}")
-    // NOTE: Leave this cursor moving code for future reference.
     const input = parent.document.activeElement
     const pos = input.selectionStart - 2
     input.setSelectionRange(pos, pos)
@@ -361,7 +360,6 @@ function provideStyles() {
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
-      overflow: hidden;
       width: 39px;
       min-height: 39px;
     }
@@ -374,7 +372,7 @@ function provideStyles() {
       border-radius: 50%;
       cursor: pointer;
       position: relative;
-      opacity: 0.5;
+      opacity: 0.6;
     }
     .kef-days-num:hover {
       color: var(--ls-active-secondary-color);
@@ -403,9 +401,14 @@ function provideStyles() {
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
-      margin-top: 2px;
-      font-size: 0.65em;
+      font-size: 0.7em;
       cursor: pointer;
+      border-radius: 2px;
+    }
+    .kef-days-prop:hover {
+      overflow: initial;
+    }
+    .kef-days-prop-text {
       padding: 0 2px;
       border-radius: 2px;
     }
