@@ -7,7 +7,13 @@ import {
   previousDay,
 } from "date-fns"
 import { mod } from "jsutils"
+import { t } from "logseq-l10n"
 import { cls } from "reactutils"
+import NextEventIcon from "../icons/NextEventIcon"
+import NextIcon from "../icons/NextIcon"
+import PrevEventIcon from "../icons/PrevEventIcon"
+import PrevIcon from "../icons/PrevIcon"
+import RefreshIcon from "../icons/RefreshIcon"
 import { mapRange } from "../libs/utils"
 
 export default function CalendarView({
@@ -22,6 +28,7 @@ export default function CalendarView({
   onNextRef,
   onGotoJournal,
   onGotoPropertyOrigin,
+  onRefresh,
 }) {
   const firstDay = getDay(new Date(month.getFullYear(), month.getMonth(), 1))
 
@@ -32,7 +39,32 @@ export default function CalendarView({
           {intlFormat(month, { year: "numeric", month: "long" }, { locale })}
         </div>
         <div class="kef-days-span" />
-        <div class="kef-days-controls">Today</div>
+        <div class="kef-days-controls">
+          <button
+            class="kef-days-control-icon kef-days-refresh"
+            onClick={onRefresh}
+          >
+            <RefreshIcon />
+          </button>
+          <button class="kef-days-control-icon" onClick={onPrevRef}>
+            <PrevEventIcon />
+          </button>
+          <button class="kef-days-control-icon" onClick={onPrevMonth}>
+            <PrevIcon />
+          </button>
+          <button
+            class="kef-days-go-today"
+            onClick={() => onMonthChange(new Date())}
+          >
+            {t("Today")}
+          </button>
+          <button class="kef-days-control-icon" onClick={onNextMonth}>
+            <NextIcon />
+          </button>
+          <button class="kef-days-control-icon" onClick={onNextRef}>
+            <NextEventIcon />
+          </button>
+        </div>
       </header>
       <main class="kef-days-month-view">
         {mapRange(0, 7, (d) => {

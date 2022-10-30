@@ -330,7 +330,7 @@ function provideStyles() {
     }
     .kef-days-date {
       flex: 0 0 auto;
-      font-size: 1.4em;
+      font-size: 1.3em;
       font-weight: 500;
       line-height: 2;
     }
@@ -339,7 +339,23 @@ function provideStyles() {
     }
     .kef-days-controls {
       flex: 0 0 auto;
-      font-size: 0.9em;
+      font-size: 0.9375em;
+      display: flex;
+      align-items: flex-start;
+    }
+    .kef-days-control-icon {
+      height: 24px;
+      padding: 4px 0;
+      color: var(--ls-primary-text-color);
+    }
+    .kef-days-control-icon:hover {
+      color: var(--ls-active-primary-color);
+    }
+    .kef-days-refresh {
+      margin-right: 10px;
+    }
+    .kef-days-go-today:hover {
+      color: var(--ls-active-primary-color);
     }
     .kef-days-month-view {
       display: grid;

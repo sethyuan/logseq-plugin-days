@@ -14,6 +14,7 @@ import {
   parse,
   startOfMonth,
 } from "date-fns"
+import { t } from "logseq-l10n"
 import { useEffect, useState } from "preact/hooks"
 import { dashToCamel, getSettingProps, parseContent } from "../libs/utils"
 import CalendarView from "./CalendarView"
@@ -37,8 +38,11 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
         candidate = day
       }
     }
-    console.log("prev", candidate)
-    setMonth(candidate)
+    if (isFinite(candidate)) {
+      setMonth(new Date(candidate))
+    } else {
+      logseq.UI.showMsg(t("There's no more."))
+    }
   }
 
   async function findNext() {
@@ -49,8 +53,11 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
         candidate = day
       }
     }
-    console.log("next", candidate)
-    setMonth(candidate)
+    if (isFinite(candidate)) {
+      setMonth(new Date(candidate))
+    } else {
+      logseq.UI.showMsg(t("There's no more."))
+    }
   }
 
   function prevMonth() {
@@ -76,6 +83,13 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
     logseq.Editor.scrollToBlockInPage(key)
   }
 
+  function refresh() {
+    ;(async () => {
+      const days = await getDays(query, month, dateFormat)
+      setDays(days)
+    })()
+  }
+
   if (days == null) return null
 
   return (
@@ -91,6 +105,7 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
       onNextRef={findNext}
       onGotoJournal={gotoJournal}
       onGotoPropertyOrigin={gotoPropertyOrigin}
+      onRefresh={refresh}
     />
   )
 }
