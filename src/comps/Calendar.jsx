@@ -64,7 +64,16 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
   function gotoJournal(d) {
     const pageDate = new Date(month.getFullYear(), month.getMonth(), d)
     const pageName = format(pageDate, dateFormat)
-    logseq.Editor.scrollToBlockInPage(pageName)
+    const dayData = days.get(pageDate.getTime())
+    if (dayData?.uuid) {
+      logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
+    } else {
+      logseq.Editor.scrollToBlockInPage(pageName)
+    }
+  }
+
+  function gotoPropertyOrigin(key) {
+    logseq.Editor.scrollToBlockInPage(key)
   }
 
   if (days == null) return null
@@ -80,7 +89,8 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
       onNextMonth={nextMonth}
       onPrevRef={findPrev}
       onNextRef={findNext}
-      onGoto={gotoJournal}
+      onGotoJournal={gotoJournal}
+      onGotoPropertyOrigin={gotoPropertyOrigin}
     />
   )
 }
@@ -150,6 +160,7 @@ async function getBlockAndSpecials(block, month, dateFormat) {
       prop.repeatEndAt,
     )
   }
+  console.log(days)
   return days
 }
 
@@ -158,7 +169,7 @@ async function findDays(days, uuid, dateFormat) {
   try {
     journals = (
       await logseq.DB.datascriptQuery(
-        `[:find (pull ?j [:block/original-name])
+        `[:find (pull ?j [:block/original-name]) (pull ?b [:block/uuid])
         :in $ ?uuid
         :where
         [?t :block/uuid ?uuid]
@@ -167,7 +178,7 @@ async function findDays(days, uuid, dateFormat) {
         [?j :block/journal? true]]`,
         `#uuid "${uuid}"`,
       )
-    ).map(([item]) => item)
+    ).map(([journal, block]) => ({ ...journal, ...block }))
   } catch (err) {
     console.error(err)
     return
@@ -182,7 +193,10 @@ async function findDays(days, uuid, dateFormat) {
       // ignore this block because it has no valid date value.
       continue
     }
-    days.set(date.getTime(), null)
+    const ts = date.getTime()
+    if (!days.has(ts)) {
+      days.set(ts, { uuid: journal.uuid })
+    }
   }
 }
 
@@ -210,12 +224,14 @@ async function findPropertyDaysForBlock(
     return
   }
 
+  const ts = date.getTime()
+  const properties = getProperties(days, ts)
   const dayData = {
     name: block.originalName ?? (await parseContent(block.content)),
     color,
+    jumpKey: block.name ?? block.uuid,
   }
-
-  days.set(date.getTime(), dayData)
+  properties.push(dayData)
 
   if (repeat) {
     findRecurrenceDays(
@@ -268,15 +284,22 @@ async function findPropertyDays(
       continue
     }
 
+    const page =
+      block.parent.id === block.page.id
+        ? await logseq.Editor.getPage(block.page.id)
+        : null
     const dayData = {
       name:
         block.parent.id === block.page.id
-          ? (await logseq.Editor.getPage(block.page.id)).originalName
+          ? page.originalName
           : await parseContent(block.content),
       color,
+      jumpKey: block.parent.id === block.page.id ? page.name : block.uuid,
     }
 
-    days.set(date.getTime(), dayData)
+    const ts = date.getTime()
+    const properties = getProperties(days, ts)
+    properties.push(dayData)
 
     if (repeat) {
       findRecurrenceDays(
@@ -290,6 +313,17 @@ async function findPropertyDays(
       )
     }
   }
+}
+
+function getProperties(days, ts) {
+  if (!days.has(ts)) {
+    days.set(ts, { properties: [] })
+  }
+  const day = days.get(ts)
+  if (day.properties == null) {
+    day.properties = []
+  }
+  return day.properties
 }
 
 function findRecurrenceDays(
@@ -307,9 +341,18 @@ function findRecurrenceDays(
   const monthStart = startOfMonth(month)
   const monthEnd = endOfMonth(month)
 
-  let times = (differenceInUnit[unit](monthStart, date) / quantity) >> 0
-  let recurred = addUnit[unit](date, quantity * times)
-  days.set(recurred.getTime(), dayData)
+  let recurred = date
+  const diff = differenceInUnit[unit](
+    isBefore(repeatEndAt, monthStart) ? repeatEndAt : monthStart,
+    date,
+  )
+  let times = (diff / quantity) >> 0
+  if (times > 0) {
+    recurred = addUnit[unit](recurred, quantity * Math.min(times, repeatCount))
+    const ts = recurred.getTime()
+    const properties = getProperties(days, ts)
+    properties.push(dayData)
+  }
   while (
     isBefore(recurred, monthEnd) &&
     times < repeatCount &&
@@ -317,6 +360,10 @@ function findRecurrenceDays(
   ) {
     recurred = addUnit[unit](recurred, quantity)
     times++
-    days.set(recurred.getTime(), dayData)
+    if (isBefore(recurred, repeatEndAt)) {
+      const ts = recurred.getTime()
+      const properties = getProperties(days, ts)
+      properties.push(dayData)
+    }
   }
 }

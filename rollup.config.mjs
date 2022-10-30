@@ -1,4 +1,5 @@
 import alias from "@rollup/plugin-alias"
+import commonjs from "@rollup/plugin-commonjs"
 import html from "@rollup/plugin-html"
 import json from "@rollup/plugin-json"
 import { nodeResolve } from "@rollup/plugin-node-resolve"
@@ -19,6 +20,7 @@ export default {
         { find: "react-dom", replacement: "preact/compat" },
       ],
     }),
+    commonjs(),
     html({
       fileName: "index.html",
       template: async ({ files }) => {

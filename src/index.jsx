@@ -323,13 +323,11 @@ async function renderCalendar(id, q) {
 
 function provideStyles() {
   logseq.provideStyle(`
-    .kef-days-calendar {
-      background-color: var(--ls-primary-background-color);
-    }
     .kef-days-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 0 4px;
     }
     .kef-days-date {
       flex: 0 0 auto;
@@ -350,19 +348,25 @@ function provideStyles() {
       grid-template-rows: auto;
       grid-auto-rows: 1fr;
       gap: 7px;
+      font-size: 0.9375em;
     }
     .kef-days-weekday {
       text-align: center;
+      opacity: 0.85;
+    }
+    .kef-days-weekend {
+      color: var(--ls-active-secondary-color);
     }
     .kef-days-day {
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
       overflow: hidden;
-      width: 4ch;
+      width: 39px;
+      min-height: 39px;
     }
     .kef-days-num {
-      width: 31px;
+      width: 30px;
       aspect-ratio: 1;
       display: flex;
       justify-content: center;
@@ -370,9 +374,13 @@ function provideStyles() {
       border-radius: 50%;
       cursor: pointer;
       position: relative;
+      opacity: 0.5;
     }
     .kef-days-num:hover {
       color: var(--ls-active-secondary-color);
+    }
+    .kef-days-highlight {
+      opacity: 1;
     }
     .kef-days-today {
       color: var(--ls-tag-text-hover-color);
@@ -381,12 +389,11 @@ function provideStyles() {
     .kef-days-today:hover {
       color: var(--ls-tag-text-hover-color);
     }
-    .kef-days-referred::after {
-      content: "";
+    .kef-days-referred {
       width: 4px;
       height: 4px;
       border-radius: 50%;
-      background-color: var(--ls-tag-text-hover-color);
+      background-color: var(--ls-active-primary-color);
       position: absolute;
       bottom: 2px;
       left: 50%;
@@ -396,8 +403,11 @@ function provideStyles() {
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
-      margin-top: 10px;
-      font-size: 0.8em;
+      margin-top: 2px;
+      font-size: 0.65em;
+      cursor: pointer;
+      padding: 0 2px;
+      border-radius: 2px;
     }
   `)
 }

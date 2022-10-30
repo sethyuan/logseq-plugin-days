@@ -1,4 +1,11 @@
-import { getDay, getDaysInMonth, intlFormat, previousDay } from "date-fns"
+import Color from "color"
+import {
+  getDay,
+  getDaysInMonth,
+  intlFormat,
+  isToday,
+  previousDay,
+} from "date-fns"
 import { mod } from "jsutils"
 import { cls } from "reactutils"
 import { mapRange } from "../libs/utils"
@@ -13,23 +20,10 @@ export default function CalendarView({
   onNextMonth,
   onPrevRef,
   onNextRef,
-  onGoto,
+  onGotoJournal,
+  onGotoPropertyOrigin,
 }) {
   const firstDay = getDay(new Date(month.getFullYear(), month.getMonth(), 1))
-
-  function isToday(d) {
-    const now = new Date()
-    return (
-      month.getFullYear() === now.getFullYear() &&
-      month.getMonth() === now.getMonth() &&
-      d === now.getDate()
-    )
-  }
-
-  function isReferred(d) {
-    const date = new Date(month.getFullYear(), month.getMonth(), d)
-    return data.has(date.getTime())
-  }
 
   return (
     <div class="kef-days-calendar">
@@ -44,7 +38,12 @@ export default function CalendarView({
         {mapRange(0, 7, (d) => {
           d = (d + weekStart) % 7
           return (
-            <div class="kef-days-weekday">
+            <div
+              class={cls(
+                "kef-days-weekday",
+                (d === 0 || d === 6) && "kef-days-weekend",
+              )}
+            >
               {intlFormat(
                 previousDay(month, d),
                 { weekday: "short" },
@@ -53,34 +52,47 @@ export default function CalendarView({
             </div>
           )
         })}
-        {mapRange(0, getDaysInMonth(month), (d) => (
-          <div
-            class="kef-days-day"
-            style={
-              d === 0
-                ? { gridColumnStart: mod(firstDay - weekStart, 7) + 1 }
-                : null
-            }
-          >
+        {mapRange(0, getDaysInMonth(month), (d) => {
+          const date = new Date(month.getFullYear(), month.getMonth(), d + 1)
+          const dayData = data.get(date.getTime())
+
+          return (
             <div
-              class={cls(
-                "kef-days-num",
-                isToday(d + 1) && "kef-days-today",
-                isReferred(d + 1) && "kef-days-referred",
-              )}
-              onClick={() => onGoto(d + 1)}
+              class="kef-days-day"
+              style={
+                d === 0
+                  ? { gridColumnStart: mod(firstDay - weekStart, 7) + 1 }
+                  : null
+              }
             >
-              {d + 1}
+              <div
+                class={cls(
+                  "kef-days-num",
+                  dayData != null && "kef-days-highlight",
+                  isToday(date) && "kef-days-today",
+                )}
+                onClick={() => onGotoJournal(d + 1)}
+              >
+                <span>{d + 1}</span>
+                {dayData && dayData.uuid && <div class="kef-days-referred" />}
+              </div>
+              {dayData?.properties?.map(({ name, color, jumpKey }) => (
+                <div
+                  key={jumpKey}
+                  class="kef-days-prop"
+                  style={{
+                    color,
+                    backgroundColor: Color(color).alpha(0.15).string(),
+                  }}
+                  title={name}
+                  onClick={() => onGotoPropertyOrigin(jumpKey)}
+                >
+                  {name}
+                </div>
+              ))}
             </div>
-            <div
-              class="kef-days-prop"
-              style={{ backgroundColor: "#ff5a00" }}
-              title="Hello World"
-            >
-              Hello World
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </main>
     </div>
   )
