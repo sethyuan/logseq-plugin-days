@@ -4,6 +4,7 @@ import {
   getDaysInMonth,
   intlFormat,
   isToday,
+  isWeekend,
   previousDay,
 } from "date-fns"
 import { mod } from "jsutils"
@@ -100,6 +101,7 @@ export default function CalendarView({
               <div
                 class={cls(
                   "kef-days-num",
+                  isWeekend(date) && "kef-days-weekend",
                   dayData != null && "kef-days-highlight",
                   isToday(date) && "kef-days-today",
                 )}

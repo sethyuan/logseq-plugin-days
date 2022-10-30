@@ -352,7 +352,8 @@ function provideStyles() {
       color: var(--ls-active-primary-color);
     }
     .kef-days-refresh {
-      margin-right: 10px;
+      margin-right: 8px;
+      padding: 5px 0;
     }
     .kef-days-go-today:hover {
       color: var(--ls-active-primary-color);
@@ -391,10 +392,11 @@ function provideStyles() {
       opacity: 0.6;
     }
     .kef-days-num:hover {
-      color: var(--ls-active-secondary-color);
+      background-color: var(--ls-quaternary-background-color);
     }
     .kef-days-highlight {
       opacity: 1;
+      font-weight: 500;
     }
     .kef-days-today {
       color: var(--ls-tag-text-hover-color);
@@ -402,6 +404,7 @@ function provideStyles() {
     }
     .kef-days-today:hover {
       color: var(--ls-tag-text-hover-color);
+      background-color: var(--ls-active-primary-color);
     }
     .kef-days-referred {
       width: 4px;
@@ -412,6 +415,9 @@ function provideStyles() {
       bottom: 2px;
       left: 50%;
       transform: translateX(-50%);
+    }
+    .kef-days-today .kef-days-referred {
+      background-color: var(--ls-tag-text-hover-color);
     }
     .kef-days-prop {
       overflow: hidden;

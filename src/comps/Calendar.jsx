@@ -41,7 +41,7 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
     if (isFinite(candidate)) {
       setMonth(new Date(candidate))
     } else {
-      logseq.UI.showMsg(t("There's no more."))
+      logseq.UI.showMsg(t("There's no more entries."))
     }
   }
 
@@ -56,7 +56,7 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
     if (isFinite(candidate)) {
       setMonth(new Date(candidate))
     } else {
-      logseq.UI.showMsg(t("There's no more."))
+      logseq.UI.showMsg(t("There's no more entries."))
     }
   }
 
