@@ -310,17 +310,14 @@ async function findPropertyDays(
     return
   }
   for (const block of blocks) {
-    const page =
-      block.parent.id === block.page.id
-        ? await logseq.Editor.getPage(block.page.id)
-        : null
+    const isPage =
+      block.parent.id === block.page.id &&
+      (await logseq.Editor.getPreviousSiblingBlock(block.uuid)) == null
+    const page = isPage ? await logseq.Editor.getPage(block.page.id) : null
     const dayData = {
-      name:
-        block.parent.id === block.page.id
-          ? page.originalName
-          : await parseContent(block.content),
+      name: isPage ? page.originalName : await parseContent(block.content),
       color,
-      jumpKey: block.parent.id === block.page.id ? page.name : block.uuid,
+      jumpKey: isPage ? page.name : block.uuid,
     }
 
     const values = block.properties[name]
