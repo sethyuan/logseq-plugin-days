@@ -1,5 +1,6 @@
 import Color from "color"
 import {
+  format,
   getDay,
   getDaysInMonth,
   intlFormat,
@@ -9,6 +10,7 @@ import {
 } from "date-fns"
 import { mod } from "jsutils"
 import { t } from "logseq-l10n"
+import { useRef, useState } from "preact/hooks"
 import { cls } from "reactutils"
 import NextEventIcon from "../icons/NextEventIcon"
 import NextIcon from "../icons/NextIcon"
@@ -31,14 +33,34 @@ export default function CalendarView({
   onGotoPropertyOrigin,
   onRefresh,
 }) {
+  const [editingDate, setEditingDate] = useState(false)
+
   const firstDay = getDay(new Date(month.getFullYear(), month.getMonth(), 1))
 
+  // HACK: Logseq prevents mouse down, this breaks clicks too.
+  function allowClick(e) {
+    e.stopPropagation()
+  }
+
+  function onDateChange(val) {
+    setEditingDate(false)
+    onMonthChange(val)
+  }
+
   return (
-    <div class="kef-days-calendar">
+    <div class="kef-days-calendar" onMouseDown={allowClick}>
       <header class="kef-days-header">
-        <div class="kef-days-date">
-          {intlFormat(month, { year: "numeric", month: "long" }, { locale })}
-        </div>
+        {editingDate ? (
+          <DateInput
+            className="kef-days-dateinput"
+            date={month}
+            onChange={onDateChange}
+          />
+        ) : (
+          <button class="kef-days-date" onClick={() => setEditingDate(true)}>
+            {intlFormat(month, { year: "numeric", month: "long" }, { locale })}
+          </button>
+        )}
         <div class="kef-days-span" />
         <div class="kef-days-controls">
           <button
@@ -131,6 +153,27 @@ export default function CalendarView({
           )
         })}
       </main>
+    </div>
+  )
+}
+
+function DateInput({ className, date, onChange }) {
+  const ref = useRef()
+
+  return (
+    <div class={className}>
+      <input
+        ref={ref}
+        class="kef-days-dateinput-input"
+        type="date"
+        defaultValue={format(date, "yyyy-MM-dd")}
+      />
+      <button
+        class="kef-days-dateinput-btn"
+        onClick={() => onChange(ref.current.valueAsDate)}
+      >
+        {t("OK")}
+      </button>
     </div>
   )
 }

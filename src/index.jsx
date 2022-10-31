@@ -335,6 +335,20 @@ function provideStyles() {
       font-weight: 500;
       line-height: 2;
     }
+    .kef-days-dateinput {
+      flex: 0 0 auto;
+      display: flex;
+      margin-right: 8px;
+    }
+    .kef-days-dateinput-input {
+      height: 30px;
+      width: 130px;
+      padding: 2px;
+      margin: 5px 2px 5px 0;
+    }
+    .kef-days-dateinput-btn:hover {
+      color: var(--ls-active-primary-color);
+    }
     .kef-days-span {
       flex: 1;
     }
@@ -353,7 +367,7 @@ function provideStyles() {
       color: var(--ls-active-primary-color);
     }
     .kef-days-refresh {
-      margin-right: 8px;
+      margin-right: 6px;
       padding: 5px 0;
     }
     .kef-days-go-today:hover {
