@@ -16,6 +16,12 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 
 ## 使用展示 (Usage)
 
+https://user-images.githubusercontent.com/3410293/198977267-2e51bc38-bb6f-4546-b50a-86358352975d.mp4
+
+
+https://user-images.githubusercontent.com/3410293/198977388-af5e7e1c-9fba-4ccb-8227-f3af7ab95b7a.mp4
+
+
 ## 使用示例 (Examples)
 
 ```
