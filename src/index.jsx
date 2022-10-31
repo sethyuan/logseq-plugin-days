@@ -266,7 +266,7 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
     if (q === DYNAMIC) {
       observeRoute(id)
       const name = await getCurrentPageName()
-      await renderCalendar(id, name)
+      await renderCalendar(id, name, true)
     } else {
       await renderCalendar(id, q)
     }
@@ -287,7 +287,7 @@ function observeRoute(id) {
         await renderCalendar(id, null)
       } else {
         const name = await getCurrentPageName()
-        await renderCalendar(id, name)
+        await renderCalendar(id, name, true)
       }
     })
   }
@@ -301,7 +301,7 @@ async function getCurrentPageName() {
   return page && `[[${page.name}]]`
 }
 
-async function renderCalendar(id, q) {
+async function renderCalendar(id, q, withAll = false) {
   const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
     await logseq.App.getUserConfigs()
   const weekStart = (preferredStartOfWeek + 1) % 7
@@ -312,6 +312,7 @@ async function renderCalendar(id, q) {
   render(
     <Calendar
       query={q}
+      withAll={withAll}
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}

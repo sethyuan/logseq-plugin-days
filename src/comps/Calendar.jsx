@@ -19,13 +19,19 @@ import { useEffect, useState } from "preact/hooks"
 import { dashToCamel, getSettingProps, parseContent } from "../libs/utils"
 import CalendarView from "./CalendarView"
 
-export default function Calendar({ query, weekStart, locale, dateFormat }) {
+export default function Calendar({
+  query,
+  withAll,
+  weekStart,
+  locale,
+  dateFormat,
+}) {
   const [month, setMonth] = useState(() => new Date())
   const [days, setDays] = useState(null)
 
   useEffect(() => {
     ;(async () => {
-      const days = await getDays(query, month, dateFormat)
+      const days = await getDays(query, withAll, month, dateFormat)
       setDays(days)
     })()
   }, [query, month])
@@ -85,7 +91,7 @@ export default function Calendar({ query, weekStart, locale, dateFormat }) {
 
   function refresh() {
     ;(async () => {
-      const days = await getDays(query, month, dateFormat)
+      const days = await getDays(query, withAll, month, dateFormat)
       setDays(days)
     })()
   }
@@ -126,17 +132,17 @@ const differenceInUnit = {
   d: differenceInDays,
 }
 
-async function getDays(q, month, dateFormat) {
+async function getDays(q, withAll, month, dateFormat) {
   if (!q) {
     return await getOnlySpecials(month, dateFormat)
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
     const page = await logseq.Editor.getPage(name)
-    return await getBlockAndSpecials(page, month, dateFormat)
+    return await getBlockAndSpecials(page, withAll, month, dateFormat)
   } else if (q.startsWith("((")) {
     const uuid = q.substring(2, q.length - 2)
     const block = await logseq.Editor.getBlock(uuid)
-    return await getBlockAndSpecials(block, month, dateFormat)
+    return await getBlockAndSpecials(block, withAll, month, dateFormat)
   }
 }
 
@@ -158,22 +164,35 @@ async function getOnlySpecials(month, dateFormat) {
   return days
 }
 
-async function getBlockAndSpecials(block, month, dateFormat) {
+async function getBlockAndSpecials(block, withAll, month, dateFormat) {
   const props = getSettingProps()
   const days = new Map()
   await findDays(days, block.uuid, dateFormat)
   for (const prop of props) {
-    await findPropertyDaysForBlock(
-      block,
-      days,
-      dateFormat,
-      month,
-      prop.name,
-      prop.color,
-      prop.repeat,
-      prop.repeatCount,
-      prop.repeatEndAt,
-    )
+    if (withAll) {
+      await findPropertyDays(
+        days,
+        dateFormat,
+        month,
+        prop.name,
+        prop.color,
+        prop.repeat,
+        prop.repeatCount,
+        prop.repeatEndAt,
+      )
+    } else {
+      await findPropertyDaysForBlock(
+        block,
+        days,
+        dateFormat,
+        month,
+        prop.name,
+        prop.color,
+        prop.repeat,
+        prop.repeatCount,
+        prop.repeatEndAt,
+      )
+    }
   }
   return days
 }
