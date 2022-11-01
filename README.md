@@ -51,3 +51,14 @@ Custom query. Result must be journal pages. The query statements must be placed 
 Generate a topicless calendar with all special property dates.
 {{renderer :days}}
 ```
+
+## 返回日期的高级查询模板 (Template for an advanced query that returns journal pages)
+
+```clojure
+[:find (pull ?j [*])
+ :where
+ [?t :block/name "Tip"]
+ [?b :block/refs ?t]
+ [?b :block/page ?j]
+ [?j :block/journal? true]]
+```
