@@ -16,12 +16,18 @@ import {
 } from "date-fns"
 import { t } from "logseq-l10n"
 import { useEffect, useState } from "preact/hooks"
-import { dashToCamel, getSettingProps, parseContent } from "../libs/utils"
+import {
+  convertDayNumber,
+  dashToCamel,
+  getSettingProps,
+  parseContent,
+} from "../libs/utils"
 import CalendarView from "./CalendarView"
 
 export default function Calendar({
   query,
   withAll,
+  isCustom,
   weekStart,
   locale,
   dateFormat,
@@ -31,10 +37,10 @@ export default function Calendar({
 
   useEffect(() => {
     ;(async () => {
-      const days = await getDays(query, withAll, month, dateFormat)
+      const days = await getDays(query, withAll, isCustom, month, dateFormat)
       setDays(days)
     })()
-  }, [query, month])
+  }, [query, month, withAll, isCustom, dateFormat])
 
   async function findPrev() {
     const monthStart = startOfMonth(month).getTime()
@@ -132,8 +138,10 @@ const differenceInUnit = {
   d: differenceInDays,
 }
 
-async function getDays(q, withAll, month, dateFormat) {
-  if (!q) {
+async function getDays(q, withAll, isCustom, month, dateFormat) {
+  if (isCustom) {
+    return await getQuery(q, withAll, month, dateFormat)
+  } else if (!q) {
     return await getOnlySpecials(month, dateFormat)
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
@@ -202,7 +210,7 @@ async function findDays(days, uuid, dateFormat) {
   try {
     journals = (
       await logseq.DB.datascriptQuery(
-        `[:find (pull ?j [:block/original-name]) (pull ?b [:block/uuid])
+        `[:find (pull ?j [:block/journal-day]) (pull ?b [:block/uuid])
         :in $ ?uuid
         :where
         [?t :block/uuid ?uuid]
@@ -218,14 +226,7 @@ async function findDays(days, uuid, dateFormat) {
   }
 
   for (const journal of journals) {
-    let date
-    try {
-      date = parse(journal["original-name"], dateFormat, new Date())
-      if (!isValid(date)) continue
-    } catch (err) {
-      // ignore this block because it has no valid date value.
-      continue
-    }
+    const date = new Date(...convertDayNumber(journal["journal-day"]))
     const ts = date.getTime()
     if (!days.has(ts)) {
       days.set(ts, { uuid: journal.uuid })
@@ -406,4 +407,42 @@ function findRecurrenceDays(
       properties.push(dayData)
     }
   }
+}
+
+async function getQuery(q, withAll, month, dateFormat) {
+  const days = new Map()
+
+  let journals
+  try {
+    journals = (await logseq.DB.customQuery(q)).filter((j) => !!j["journal?"])
+  } catch (err) {
+    console.error(err)
+    return days
+  }
+
+  for (const journal of journals) {
+    const date = new Date(...convertDayNumber(journal.journalDay))
+    const ts = date.getTime()
+    if (!days.has(ts)) {
+      days.set(ts, { uuid: journal.uuid })
+    }
+  }
+
+  if (withAll) {
+    const props = getSettingProps()
+    for (const prop of props) {
+      await findPropertyDays(
+        days,
+        dateFormat,
+        month,
+        prop.name,
+        prop.color,
+        prop.repeat,
+        prop.repeatCount,
+        prop.repeatEndAt,
+      )
+    }
+  }
+
+  return days
 }

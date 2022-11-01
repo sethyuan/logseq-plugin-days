@@ -9,6 +9,7 @@ import zhCN from "./translations/zh-CN.json"
 const routeOffHooks = {}
 
 const DYNAMIC = "*"
+const CUSTOM = "@"
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -248,7 +249,8 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   const renderered = parent.document.getElementById(slot)?.childElementCount > 0
   if (renderered) return
 
-  const q = args.slice(1).join(", ").trim()
+  const q = args[1]?.trim()
+  const withAll = args[2]?.trim()
   const id = `kef-days-${slot}`
 
   logseq.provideUI({
@@ -267,8 +269,21 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
       observeRoute(id)
       const name = await getCurrentPageName()
       await renderCalendar(id, name, true)
+    } else if (q === CUSTOM) {
+      const block = await logseq.Editor.getBlock(uuid, {
+        includeChildren: true,
+      })
+      const lines = block.children[0]?.content?.split("\n")
+      const query = lines
+        ?.filter((_, i) => i > 0 && i < lines.length - 1)
+        .join("\n")
+      if (query) {
+        await renderCalendar(id, query, withAll === "all", true)
+      } else {
+        await renderCalendar(id, null, true)
+      }
     } else {
-      await renderCalendar(id, q)
+      await renderCalendar(id, q, withAll === "all")
     }
   }, 0)
 }
@@ -284,7 +299,7 @@ function observeRoute(id) {
       }
 
       if (template === "/") {
-        await renderCalendar(id, null)
+        await renderCalendar(id, null, true)
       } else {
         const name = await getCurrentPageName()
         await renderCalendar(id, name, true)
@@ -301,10 +316,10 @@ async function getCurrentPageName() {
   return page && `[[${page.name}]]`
 }
 
-async function renderCalendar(id, q, withAll = false) {
+async function renderCalendar(id, q, withAll = false, isCustom = false) {
   const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
     await logseq.App.getUserConfigs()
-  const weekStart = (preferredStartOfWeek + 1) % 7
+  const weekStart = (+(preferredStartOfWeek ?? 6) + 1) % 7
   setDefaultOptions({
     locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
     weekStartsOn: weekStart,
@@ -313,6 +328,7 @@ async function renderCalendar(id, q, withAll = false) {
     <Calendar
       query={q}
       withAll={withAll}
+      isCustom={isCustom}
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
