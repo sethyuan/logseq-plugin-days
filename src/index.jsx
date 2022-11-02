@@ -447,9 +447,6 @@ function provideStyles() {
       left: 50%;
       transform: translateX(-50%);
     }
-    .kef-days-today .kef-days-referred {
-      background-color: var(--ls-tag-text-hover-color);
-    }
     .kef-days-prop {
       overflow: hidden;
       white-space: nowrap;
