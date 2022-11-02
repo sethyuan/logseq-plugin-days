@@ -35,11 +35,15 @@ export default function Calendar({
   const [month, setMonth] = useState(() => new Date())
   const [days, setDays] = useState(null)
 
-  useEffect(() => {
+  async function queryData() {
     ;(async () => {
       const days = await getDays(query, withAll, isCustom, month, dateFormat)
       setDays(days)
     })()
+  }
+
+  useEffect(() => {
+    queryData()
   }, [query, month, withAll, isCustom, dateFormat])
 
   async function findPrev() {
@@ -96,10 +100,7 @@ export default function Calendar({
   }
 
   function refresh() {
-    ;(async () => {
-      const days = await getDays(query, withAll, month, dateFormat)
-      setDays(days)
-    })()
+    queryData()
   }
 
   if (days == null) return null

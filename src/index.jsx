@@ -372,7 +372,7 @@ function provideStyles() {
       flex: 0 0 auto;
       font-size: 0.9375em;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
     }
     .kef-days-control-icon {
       height: 24px;
@@ -420,7 +420,7 @@ function provideStyles() {
       border-radius: 50%;
       cursor: pointer;
       position: relative;
-      opacity: 0.6;
+      opacity: 0.7;
     }
     .kef-days-num:hover {
       background-color: var(--ls-quaternary-background-color);
@@ -430,12 +430,12 @@ function provideStyles() {
       font-weight: 500;
     }
     .kef-days-today {
-      color: var(--ls-tag-text-hover-color);
-      background-color: var(--ls-active-primary-color);
+      color: var(--ls-selection-text-color);
+      background-color: var(--ls-selection-background-color);
     }
     .kef-days-today:hover {
-      color: var(--ls-tag-text-hover-color);
-      background-color: var(--ls-active-primary-color);
+      color: var(--ls-selection-text-color);
+      background-color: var(--ls-selection-background-color);
     }
     .kef-days-referred {
       width: 4px;
