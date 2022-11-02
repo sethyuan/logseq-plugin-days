@@ -386,6 +386,10 @@ function provideStyles() {
       margin-right: 6px;
       padding: 5px 0;
     }
+    .kef-days-go-today {
+      line-height: 24px;
+      height: 24px;
+    }
     .kef-days-go-today:hover {
       color: var(--ls-active-primary-color);
     }
