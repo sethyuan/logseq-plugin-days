@@ -142,7 +142,7 @@ export default function CalendarView({
                     class="kef-days-prop-text"
                     style={{
                       color,
-                      backgroundColor: Color(color).alpha(0.15).string(),
+                      backgroundColor: Color(color).lightness(90).string(),
                     }}
                   >
                     {name}

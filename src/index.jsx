@@ -461,6 +461,7 @@ function provideStyles() {
     }
     .kef-days-prop:hover {
       overflow: initial;
+      z-index: var(--ls-z-index-level-1);
     }
     .kef-days-prop-text {
       padding: 0 2px;
