@@ -455,7 +455,7 @@ function provideStyles() {
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
-      font-size: 0.7em;
+      font-size: 0.8em;
       cursor: pointer;
       border-radius: 2px;
     }
