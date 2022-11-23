@@ -28,6 +28,7 @@ export default function Calendar({
   query,
   withAll,
   isCustom,
+  withJournal,
   weekStart,
   locale,
   dateFormat,
@@ -37,14 +38,21 @@ export default function Calendar({
 
   async function queryData() {
     ;(async () => {
-      const days = await getDays(query, withAll, isCustom, month, dateFormat)
+      const days = await getDays(
+        query,
+        withAll,
+        isCustom,
+        withJournal,
+        month,
+        dateFormat,
+      )
       setDays(days)
     })()
   }
 
   useEffect(() => {
     queryData()
-  }, [query, month, withAll, isCustom, dateFormat])
+  }, [query, month, withAll, isCustom, withJournal, dateFormat])
 
   async function findPrev() {
     const monthStart = startOfMonth(month).getTime()
@@ -139,15 +147,23 @@ const differenceInUnit = {
   d: differenceInDays,
 }
 
-async function getDays(q, withAll, isCustom, month, dateFormat) {
+async function getDays(q, withAll, isCustom, withJournal, month, dateFormat) {
   if (isCustom) {
     return await getQuery(q, withAll, month, dateFormat)
   } else if (!q) {
-    return await getOnlySpecials(month, dateFormat)
+    const days = await getOnlySpecials(month, dateFormat)
+    if (withJournal) {
+      await fillInJournalDays(days, month, dateFormat)
+    }
+    return days
   } else if (q.startsWith("[[")) {
     const name = q.substring(2, q.length - 2)
     const page = await logseq.Editor.getPage(name)
-    return await getBlockAndSpecials(page, withAll, month, dateFormat)
+    const days = await getBlockAndSpecials(page, withAll, month, dateFormat)
+    if (withJournal) {
+      await fillInJournalDays(days, month, dateFormat)
+    }
+    return days
   } else if (q.startsWith("((")) {
     const uuid = q.substring(2, q.length - 2)
     const block = await logseq.Editor.getBlock(uuid)
@@ -444,4 +460,33 @@ async function getQuery(q, withAll, month, dateFormat) {
   }
 
   return days
+}
+
+async function fillInJournalDays(days, month, dateFormat) {
+  const start = format(startOfMonth(month), "yyyyMMdd")
+  const end = format(endOfMonth(month), "yyyyMMdd")
+  try {
+    const result = (
+      await logseq.DB.datascriptQuery(`
+      [:find (pull ?p [:block/original-name])
+       :where
+       [?p :block/journal? true]
+       [?p :block/journal-day ?d]
+       [(>= ?d ${start})]
+       [(<= ?d ${end})]
+       [?b :block/page ?p]]
+    `)
+    ).flat()
+    for (const journal of result) {
+      const ts = parse(journal["original-name"], dateFormat, month).getTime()
+      const day = days.get(ts)
+      if (day != null) {
+        day.contentful = true
+      } else {
+        days.set(ts, { contentful: true })
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
 }

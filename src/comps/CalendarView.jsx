@@ -124,13 +124,14 @@ export default function CalendarView({
                 class={cls(
                   "kef-days-num",
                   isWeekend(date) && "kef-days-weekend",
-                  dayData != null && "kef-days-highlight",
+                  dayData?.uuid != null && "kef-days-highlight",
                   isToday(date) && "kef-days-today",
                 )}
                 onClick={() => onGotoJournal(d + 1)}
               >
                 <span>{d + 1}</span>
-                {dayData && dayData.uuid && <div class="kef-days-referred" />}
+                {dayData?.contentful && <div class="kef-days-contentful" />}
+                {dayData?.uuid && <div class="kef-days-referred" />}
               </div>
               {dayData?.properties?.map(({ name, color, jumpKey }) => (
                 <div

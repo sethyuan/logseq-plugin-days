@@ -19,7 +19,7 @@ async function main() {
   logseq.App.onMacroRendererSlotted(daysRenderer)
 
   logseq.Editor.registerSlashCommand("Days", async () => {
-    await logseq.Editor.insertAtEditingCursor("{{renderer :days}}")
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days, }}")
     const input = parent.document.activeElement
     const pos = input.selectionStart - 2
     input.setSelectionRange(pos, pos)
@@ -268,7 +268,7 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
     if (q === DYNAMIC) {
       observeRoute(id)
       const name = await getCurrentPageName()
-      await renderCalendar(id, name, true)
+      await renderCalendar(id, name, true, false, true)
     } else if (q === CUSTOM) {
       const block = await logseq.Editor.getBlock(uuid, {
         includeChildren: true,
@@ -299,10 +299,10 @@ function observeRoute(id) {
       }
 
       if (template === "/") {
-        await renderCalendar(id, null, true)
+        await renderCalendar(id, null, true, false, true)
       } else {
         const name = await getCurrentPageName()
-        await renderCalendar(id, name, true)
+        await renderCalendar(id, name, true, false, true)
       }
     })
   }
@@ -316,7 +316,13 @@ async function getCurrentPageName() {
   return page && `[[${page.name}]]`
 }
 
-async function renderCalendar(id, q, withAll = false, isCustom = false) {
+async function renderCalendar(
+  id,
+  q,
+  withAll = false,
+  isCustom = false,
+  withJournal = false,
+) {
   const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
     await logseq.App.getUserConfigs()
   const weekStart = (+(preferredStartOfWeek ?? 6) + 1) % 7
@@ -329,6 +335,7 @@ async function renderCalendar(id, q, withAll = false, isCustom = false) {
       query={q}
       withAll={withAll}
       isCustom={isCustom}
+      withJournal={withJournal}
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
@@ -441,6 +448,13 @@ function provideStyles() {
       color: var(--ls-selection-text-color);
       background-color: var(--ls-selection-background-color);
     }
+    .kef-days-contentful {
+      width: 8px;
+      height: 2px;
+      background: var(--ls-success-text-color);
+      position: absolute;
+      top: 3px;
+    }
     .kef-days-referred {
       width: 4px;
       height: 4px;
@@ -448,8 +462,6 @@ function provideStyles() {
       background-color: var(--ls-active-primary-color);
       position: absolute;
       bottom: 2px;
-      left: 50%;
-      transform: translateX(-50%);
     }
     .kef-days-prop {
       overflow: hidden;

@@ -4,7 +4,7 @@
 
 Generate a calendar with all days related to a topic highlighted. A topic is either a page or a block.
 
-## 功能展示 (Feature Highlights)
+## 功能展示
 
 - 高亮提示引用了页面或块的那些日子
 - 跳转到上一个或下一个有引用页面或块的月份
@@ -14,6 +14,8 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 - 支持全球化，目前内置了简体中文及英文，欢迎提 PR
 - 一周的开始跟随 Logseq 的设定，请在 Logseq 中修改
 - 支持返回日记页面的自定义查询
+
+## Feature Highlights
 
 - Highlight those days that have references to the page or block
 - Jump to the previous/next month with references to the page or block
@@ -40,8 +42,13 @@ Generate an event calendar for a specific page or block with special property da
 {{renderer :days, [[page]]}}
 {{renderer :days, ((block ref))}}
 
-针对当前主页面生成事件日历，但显示全部特殊日期。
-Generate an event calendar for the main page with all special property dates.
+同上，但显示全部特殊日期。
+Same as above, but shows all special property dates.
+{{renderer :days, [[page]], all}}
+{{renderer :days, ((block ref)), all}}
+
+针对当前主页面生成事件日历，显示全部特殊日期并同时标出有日记内容的那些天。
+Generate an event calendar for the main page with all special property dates and display days with a journal content.
 {{renderer :days, *}}
 
 自定义查询，需返回日记页面。查询语句需以代码块的方式放在第一个子块中。`all`代表要包含全部特殊日期。
