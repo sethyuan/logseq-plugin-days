@@ -47,6 +47,12 @@ export default function CalendarView({
     onMonthChange(val)
   }
 
+  function onDayClick(e, d) {
+    e.preventDefault()
+    e.stopPropagation()
+    onGotoJournal(d, e.shiftKey)
+  }
+
   return (
     <div class="kef-days-calendar" onMouseDown={allowClick}>
       <header class="kef-days-header">
@@ -127,7 +133,7 @@ export default function CalendarView({
                   dayData?.uuid != null && "kef-days-highlight",
                   isToday(date) && "kef-days-today",
                 )}
-                onClick={() => onGotoJournal(d + 1)}
+                onClick={(e) => onDayClick(e, d + 1)}
               >
                 <span>{d + 1}</span>
                 {dayData?.contentful && <div class="kef-days-contentful" />}

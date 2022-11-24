@@ -432,6 +432,7 @@ function provideStyles() {
       cursor: pointer;
       position: relative;
       opacity: 0.7;
+      user-select: none;
     }
     .kef-days-num:hover {
       background-color: var(--ls-quaternary-background-color);

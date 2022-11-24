@@ -92,14 +92,23 @@ export default function Calendar({
     setMonth((m) => addMonths(m, 1))
   }
 
-  function gotoJournal(d) {
+  async function gotoJournal(d, openInSidebar) {
     const pageDate = new Date(month.getFullYear(), month.getMonth(), d)
     const pageName = format(pageDate, dateFormat)
     const dayData = days.get(pageDate.getTime())
     if (dayData?.uuid) {
-      logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
+      if (openInSidebar) {
+        logseq.Editor.openInRightSidebar(dayData.uuid)
+      } else {
+        logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
+      }
     } else {
-      logseq.Editor.scrollToBlockInPage(pageName)
+      if (openInSidebar) {
+        const page = await logseq.Editor.getPage(pageName)
+        logseq.Editor.openInRightSidebar(page.uuid)
+      } else {
+        logseq.Editor.scrollToBlockInPage(pageName)
+      }
     }
   }
 
