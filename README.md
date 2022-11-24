@@ -7,6 +7,7 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 ## 功能展示
 
 - 高亮提示引用了页面或块的那些日子
+- 可提示有日记内容的那些日子
 - 跳转到上一个或下一个有引用页面或块的月份
 - 点击有引用的那一天会定位到那一天被引用了的地方
 - 点击任意天会跳转到那一天的日记页面
@@ -18,6 +19,7 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 ## Feature Highlights
 
 - Highlight those days that have references to the page or block
+- Indicate those days that have journal content
 - Jump to the previous/next month with references to the page or block
 - Clicking on a day with reference will take you to that day and block
 - Clicking on any day will jump to that day's journal page
