@@ -228,6 +228,16 @@ async function getBlockAndSpecials(block, withAll, month, dateFormat) {
       )
     }
   }
+  if (block["journal?"]) {
+    const date = new Date(...convertDayNumber(block.journalDay))
+    const ts = date.getTime()
+    if (!days.has(ts)) {
+      days.set(ts, { current: true })
+    } else {
+      const day = days.get(ts)
+      day.current = true
+    }
+  }
   return days
 }
 

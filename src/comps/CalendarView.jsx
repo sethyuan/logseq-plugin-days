@@ -132,6 +132,7 @@ export default function CalendarView({
                   isWeekend(date) && "kef-days-weekend",
                   dayData?.uuid != null && "kef-days-highlight",
                   isToday(date) && "kef-days-today",
+                  dayData?.current && "kef-days-current",
                 )}
                 onClick={(e) => onDayClick(e, d + 1)}
               >

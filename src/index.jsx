@@ -449,6 +449,14 @@ function provideStyles() {
       color: var(--ls-selection-text-color);
       background-color: var(--ls-selection-background-color);
     }
+    .kef-days-current {
+      color: #fff;
+      background-color: var(--ls-active-secondary-color);
+    }
+    .kef-days-current:hover {
+      color: #fff;
+      background-color: var(--ls-active-secondary-color);
+    }
     .kef-days-contentful {
       width: 8px;
       height: 2px;
