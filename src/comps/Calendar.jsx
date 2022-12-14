@@ -37,17 +37,15 @@ export default function Calendar({
   const [days, setDays] = useState(null)
 
   async function queryData() {
-    ;(async () => {
-      const days = await getDays(
-        query,
-        withAll,
-        isCustom,
-        withJournal,
-        month,
-        dateFormat,
-      )
-      setDays(days)
-    })()
+    const days = await getDays(
+      query,
+      withAll,
+      isCustom,
+      withJournal,
+      month,
+      dateFormat,
+    )
+    setDays(days)
   }
 
   useEffect(() => {

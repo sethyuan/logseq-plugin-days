@@ -290,21 +290,23 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
 
 function observeRoute(id) {
   if (routeOffHooks[id] == null) {
-    routeOffHooks[id] = logseq.App.onRouteChanged(async ({ template }) => {
-      const rootEl = parent.document.getElementById(id)
-      if (rootEl == null || !rootEl.isConnected) {
-        routeOffHooks[id]?.()
-        routeOffHooks[id] = undefined
-        return
-      }
+    routeOffHooks[id] = logseq.App.onRouteChanged(
+      async ({ path, template }) => {
+        const rootEl = parent.document.getElementById(id)
+        if (rootEl == null || !rootEl.isConnected) {
+          routeOffHooks[id]?.()
+          routeOffHooks[id] = undefined
+          return
+        }
 
-      if (template === "/") {
-        await renderCalendar(id, null, true, false, true)
-      } else {
-        const name = await getCurrentPageName()
-        await renderCalendar(id, name, true, false, true)
-      }
-    })
+        if (template === "/") {
+          await renderCalendar(id, null, true, false, true)
+        } else {
+          const name = `[[${path.replace(/^\/page\//, "").toLowerCase()}]]`
+          await renderCalendar(id, name, true, false, true)
+        }
+      },
+    )
   }
 }
 
