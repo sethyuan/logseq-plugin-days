@@ -195,7 +195,7 @@ async function getOnlySpecials(month, dateFormat) {
 async function getBlockAndSpecials(block, withAll, month, dateFormat) {
   const props = getSettingProps()
   const days = new Map()
-  await findDays(days, block.uuid, dateFormat)
+  await findDays(days, block, dateFormat)
   for (const prop of props) {
     if (withAll) {
       await findPropertyDays(
@@ -235,7 +235,7 @@ async function getBlockAndSpecials(block, withAll, month, dateFormat) {
   return days
 }
 
-async function findDays(days, uuid, dateFormat) {
+async function findDays(days, block, dateFormat) {
   let journals
   try {
     journals = (
@@ -247,12 +247,23 @@ async function findDays(days, uuid, dateFormat) {
         [?b :block/refs ?t]
         [?b :block/page ?j]
         [?j :block/journal? true]]`,
-        `#uuid "${uuid}"`,
+        `#uuid "${block.uuid}"`,
       )
     ).map(([journal, block]) => ({ ...journal, ...block }))
   } catch (err) {
     console.error(err)
     return
+  }
+
+  if (block.page != null) {
+    const page = await logseq.Editor.getPage(block.page.id)
+    if (page["journal?"]) {
+      const date = new Date(...convertDayNumber(page.journalDay))
+      const ts = date.getTime()
+      if (!days.has(ts)) {
+        days.set(ts, { uuid: block.uuid })
+      }
+    }
   }
 
   for (const journal of journals) {
