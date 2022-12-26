@@ -163,18 +163,14 @@ async function getDays(q, withAll, isCustom, withJournal, month, dateFormat) {
       await fillInJournalDays(days, month, dateFormat)
     }
     return days
-  } else if (q.startsWith("[[")) {
-    const name = q.substring(2, q.length - 2)
-    const page = await logseq.Editor.getPage(name)
-    const days = await getBlockAndSpecials(page, withAll, month, dateFormat)
+  } else {
+    const block =
+      (await logseq.Editor.getPage(q)) ?? (await logseq.Editor.getBlock(q))
+    const days = await getBlockAndSpecials(block, withAll, month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
     }
     return days
-  } else if (q.startsWith("((")) {
-    const uuid = q.substring(2, q.length - 2)
-    const block = await logseq.Editor.getBlock(uuid)
-    return await getBlockAndSpecials(block, withAll, month, dateFormat)
   }
 }
 

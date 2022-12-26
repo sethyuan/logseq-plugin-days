@@ -283,7 +283,13 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
         await renderCalendar(id, null, true)
       }
     } else {
-      await renderCalendar(id, q, withAll === "all")
+      await renderCalendar(
+        id,
+        q.startsWith("[[") || q.startsWith("((")
+          ? q.substring(2, q.length - 2)
+          : q,
+        withAll === "all",
+      )
     }
   }, 0)
 }
@@ -302,9 +308,9 @@ function observeRoute(id) {
         if (template === "/") {
           await renderCalendar(id, null, true, false, true)
         } else {
-          const name = `[[${decodeURIComponent(
+          const name = decodeURIComponent(
             path.replace(/^\/page\//, "").toLowerCase(),
-          )}]]`
+          )
           await renderCalendar(id, name, true, false, true)
         }
       },
@@ -317,7 +323,7 @@ async function getCurrentPageName() {
   if (page?.page != null) {
     page = await logseq.Editor.getPage(page.page.id)
   }
-  return page && `[[${page.name}]]`
+  return page?.name
 }
 
 async function renderCalendar(
