@@ -91,9 +91,8 @@ export default function Calendar({
   }
 
   async function gotoJournal(d, openInSidebar) {
-    const pageDate = new Date(month.getFullYear(), month.getMonth(), d)
-    const pageName = format(pageDate, dateFormat)
-    const dayData = days.get(pageDate.getTime())
+    const pageName = format(d, dateFormat)
+    const dayData = days.get(d.getTime())
     if (dayData?.uuid) {
       if (openInSidebar) {
         logseq.Editor.openInRightSidebar(dayData.uuid)

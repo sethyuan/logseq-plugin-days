@@ -1,12 +1,16 @@
 import Color from "color"
 import {
+  addDays,
   format,
   getDay,
   getDaysInMonth,
   intlFormat,
+  isSameMonth,
   isToday,
   isWeekend,
+  lastDayOfMonth,
   previousDay,
+  startOfMonth,
 } from "date-fns"
 import { mod } from "jsutils"
 import { t } from "logseq-l10n"
@@ -35,7 +39,25 @@ export default function CalendarView({
 }) {
   const [editingDate, setEditingDate] = useState(false)
 
-  const firstDay = getDay(new Date(month.getFullYear(), month.getMonth(), 1))
+  const firstDay = startOfMonth(month)
+  const lastDay = lastDayOfMonth(month)
+  const prevDaysNum = mod(getDay(firstDay) - weekStart, 7)
+  const nextDaysNum = 6 - mod(getDay(lastDay) - weekStart, 7)
+  const monthDaysNum = getDaysInMonth(month)
+  const days = new Array(prevDaysNum + monthDaysNum + nextDaysNum)
+  for (let i = 0; i < prevDaysNum; i++) {
+    days[i] = addDays(firstDay, i - prevDaysNum)
+  }
+  for (let i = 0; i < monthDaysNum; i++) {
+    days[prevDaysNum + i] = new Date(
+      month.getFullYear(),
+      month.getMonth(),
+      i + 1,
+    )
+  }
+  for (let i = 0; i < nextDaysNum; i++) {
+    days[prevDaysNum + monthDaysNum + i] = addDays(lastDay, i + 1)
+  }
 
   // HACK: Logseq prevents mouse down, this breaks clicks too.
   function allowClick(e) {
@@ -113,30 +135,23 @@ export default function CalendarView({
             </div>
           )
         })}
-        {mapRange(0, getDaysInMonth(month), (d) => {
-          const date = new Date(month.getFullYear(), month.getMonth(), d + 1)
-          const dayData = data.get(date.getTime())
+        {days.map((d) => {
+          const dayData = data.get(d.getTime())
 
           return (
-            <div
-              class="kef-days-day"
-              style={
-                d === 0
-                  ? { gridColumnStart: mod(firstDay - weekStart, 7) + 1 }
-                  : null
-              }
-            >
+            <div class="kef-days-day">
               <div
                 class={cls(
                   "kef-days-num",
-                  isWeekend(date) && "kef-days-weekend",
+                  isWeekend(d) && "kef-days-weekend",
                   dayData?.uuid != null && "kef-days-highlight",
-                  isToday(date) && "kef-days-today",
+                  isToday(d) && "kef-days-today",
                   dayData?.current && "kef-days-current",
+                  !isSameMonth(d, month) && "kef-days-outside",
                 )}
-                onClick={(e) => onDayClick(e, d + 1)}
+                onClick={(e) => onDayClick(e, d)}
               >
-                <span>{d + 1}</span>
+                <span>{d.getDate()}</span>
                 {dayData?.contentful && <div class="kef-days-contentful" />}
                 {dayData?.uuid && <div class="kef-days-referred" />}
               </div>

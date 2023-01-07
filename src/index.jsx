@@ -441,15 +441,13 @@ function provideStyles() {
       border-radius: 50%;
       cursor: pointer;
       position: relative;
-      opacity: 0.7;
       user-select: none;
     }
     .kef-days-num:hover {
       background-color: var(--ls-quaternary-background-color);
     }
     .kef-days-highlight {
-      opacity: 1;
-      font-weight: 500;
+      font-weight: 600;
     }
     .kef-days-today {
       color: var(--ls-selection-text-color);
@@ -497,6 +495,9 @@ function provideStyles() {
     .kef-days-prop-text {
       padding: 0 2px;
       border-radius: 2px;
+    }
+    .kef-days-outside {
+      opacity: 0.35;
     }
   `)
 }

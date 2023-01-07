@@ -79,7 +79,7 @@ export async function parseContent(content) {
 }
 
 export function mapRange(from, to, mapper) {
-  const ret = new Array(to)
+  const ret = new Array(to - from)
   for (let i = from; i < to; i++) {
     ret[i] = mapper(i)
   }
