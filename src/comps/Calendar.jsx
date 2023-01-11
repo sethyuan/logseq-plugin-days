@@ -56,7 +56,7 @@ export default function Calendar({
     const monthStart = startOfMonth(month).getTime()
     let candidate = -Infinity
     for (const day of days.keys()) {
-      if (day < monthStart && day > candidate) {
+      if (day < monthStart && day > candidate && days.get(day).uuid != null) {
         candidate = day
       }
     }
@@ -71,7 +71,7 @@ export default function Calendar({
     const monthEnd = endOfMonth(month).getTime()
     let candidate = Infinity
     for (const day of days.keys()) {
-      if (day > monthEnd && day < candidate) {
+      if (day > monthEnd && day < candidate && days.get(day).uuid != null) {
         candidate = day
       }
     }
