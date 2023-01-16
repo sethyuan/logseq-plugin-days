@@ -486,8 +486,9 @@ async function getQuery(q, withAll, month, dateFormat) {
 }
 
 async function fillInJournalDays(days, month, dateFormat) {
-  const start = format(startOfMonth(month), "yyyyMMdd")
-  const end = format(endOfMonth(month), "yyyyMMdd")
+  // Also fill in some days of the previous month and some days of the next month.
+  const start = format(addDays(startOfMonth(month), -6), "yyyyMMdd")
+  const end = format(addDays(endOfMonth(month), 6), "yyyyMMdd")
   try {
     const result = (
       await logseq.DB.datascriptQuery(`
