@@ -246,7 +246,9 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   const [type] = args
   if (type.trim() !== ":days") return
 
-  const renderered = parent.document.getElementById(slot)?.childElementCount > 0
+  const slotEl = parent.document.getElementById(slot)
+  if (!slotEl) return
+  const renderered = slotEl.childElementCount > 0
   if (renderered) return
 
   const q = args[1]?.trim()
