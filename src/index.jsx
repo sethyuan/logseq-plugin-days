@@ -335,6 +335,9 @@ async function renderCalendar(
   isCustom = false,
   withJournal = false,
 ) {
+  const el = parent.document.getElementById(id)
+  if (el == null) return
+
   const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
     await logseq.App.getUserConfigs()
   const weekStart = (+(preferredStartOfWeek ?? 6) + 1) % 7
@@ -352,7 +355,7 @@ async function renderCalendar(
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
     />,
-    parent.document.getElementById(id),
+    el,
   )
 }
 
