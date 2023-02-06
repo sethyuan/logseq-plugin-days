@@ -1,6 +1,7 @@
 import "@logseq/libs"
 import { setDefaultOptions } from "date-fns"
 import { zhCN as dateZhCN } from "date-fns/locale"
+import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Calendar from "./comps/Calendar"
@@ -10,6 +11,9 @@ const routeOffHooks = {}
 
 const DYNAMIC = "*"
 const CUSTOM = "@"
+
+const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
+const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -23,6 +27,16 @@ async function main() {
     const input = parent.document.activeElement
     const pos = input.selectionStart - 2
     input.setSelectionRange(pos, pos)
+  })
+
+  logseq.App.registerPageMenuItem(t("Open Days"), async ({ page }) =>
+    openPageDays(page),
+  )
+  logseq.App.registerUIItem("toolbar", {
+    key: t("open-days"),
+    template: `<a class="kef-days-tb-icon" data-on-click="openDays" title="${t(
+      "Open Days",
+    )}">${TB_ICON}</a>`,
   })
 
   logseq.useSettingsSchema([
@@ -504,7 +518,53 @@ function provideStyles() {
     .kef-days-outside {
       opacity: 0.35;
     }
+
+    .kef-days-tb-icon {
+      display: flex;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      justify-content: center;
+      align-items: center;
+      color: var(--ls-header-button-background);
+    }
+    .kef-days-tb-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    .kef-days-tb-icon:hover {
+      background: var(--ls-tertiary-background-color);
+    }
   `)
 }
 
-logseq.ready(main).catch(console.error)
+async function openPageDays(pageName) {
+  await logseq.Editor.appendBlockInPage(
+    "contents",
+    `{{renderer :days, [[${pageName}]]}}`,
+  )
+  // HACK: exitEditingMode does not work if called immediately after appending.
+  await waitMs(50)
+  await logseq.Editor.exitEditingMode()
+
+  // Open contents in sidebar if not already opened.
+  let contentsEl = parent.document.querySelector(SIDEBAR_CONTENTS_SELECTOR)
+  if (contentsEl == null) {
+    const contentsPage = await logseq.Editor.getPage("contents")
+    logseq.Editor.openInRightSidebar(contentsPage.uuid)
+  }
+}
+
+const model = {
+  async openDays() {
+    const pageName = await getCurrentPageName()
+    if (pageName) {
+      openPageDays(pageName)
+    } else {
+      logseq.UI.showMsg(t("No page detected.", "warn"))
+    }
+  },
+}
+
+logseq.ready(model, main).catch(console.error)

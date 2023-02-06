@@ -418,10 +418,10 @@ jsonc-parser@^3.0.0:
   resolved "https://registry.npmmirror.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
   integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
 
-jsutils@^1.10.1:
-  version "1.10.1"
-  resolved "https://registry.npmmirror.com/jsutils/-/jsutils-1.10.1.tgz#7527d42823748a4e180c43da6a88b0d054af2266"
-  integrity sha512-OkS8Is0fPyHRYqZreJnXIEnY+kMfAzLFQyl5+zKLwFB1rDyOjmaQSyLAp3mbG/WR5lg6Khc7GXMPyZ/flcL0hQ==
+jsutils@^1.12.0:
+  version "1.12.0"
+  resolved "https://registry.npmmirror.com/jsutils/-/jsutils-1.12.0.tgz#6feec193a500919937c82ebe75752e042b407be0"
+  integrity sha512-pLxwlgmGBKqqCU/lhas2xdv/x4BrCJhQskl2tM3ICHQAQioBRnSGck0EJOYpWeQrAH5dXZVEqcuZpSW6jQzrrA==
 
 lodash-es@4.17.21:
   version "4.17.21"
