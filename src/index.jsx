@@ -321,13 +321,13 @@ function observeRoute(id) {
           return
         }
 
-        if (template === "/") {
-          await renderCalendar(id, null, true, false, true)
-        } else {
+        if (template === "/page/:name") {
           const name = decodeURIComponent(
-            path.replace(/^\/page\//, "").toLowerCase(),
+            path.substring("/page/".length).toLowerCase(),
           )
           await renderCalendar(id, name, true, false, true)
+        } else {
+          await renderCalendar(id, null, true, false, true)
         }
       },
     )
