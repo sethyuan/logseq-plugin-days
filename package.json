@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-days",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-days",
@@ -11,7 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@logseq/libs": "^0.0.10",
+    "@logseq/libs": "^0.0.14",
     "color": "^4.2.3",
     "date-fns": "^2.29.3",
     "jsutils": "^1.12.0",
