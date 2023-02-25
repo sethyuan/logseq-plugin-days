@@ -524,7 +524,7 @@ async function fillInTaskDays(days, month, dateFormat) {
   const end = format(addDays(endOfMonth(month), 6), "yyyyMMdd")
   try {
     const result = await logseq.DB.datascriptQuery(`
-        [:find ?d (pull ?b [:block/marker])
+        [:find ?d (pull ?b [:block/marker :block/scheduled :block/deadline {:block/page [:block/journal-day]}])
          :where
          (or-join [?d ?b]
            (and
@@ -537,19 +537,21 @@ async function fillInTaskDays(days, month, dateFormat) {
          [(>= ?d ${start})]
          [(<= ?d ${end})]]
       `)
-    for (const [dayNum, marker] of result) {
+    for (const [dayNum, block] of result) {
       const ts = dayNumToTs(dayNum)
       const day = days.get(ts)
       if (day != null) {
-        if (marker) {
+        if (block?.marker && block?.page["journal-day"] === dayNum) {
           day.hasTask = true
-        } else {
+        }
+        if (block?.scheduled || block?.deadline) {
           day.hasSch = true
         }
       } else {
-        if (marker) {
+        if (block?.marker && block?.page["journal-day"] === dayNum) {
           days.set(ts, { hasTask: true })
-        } else {
+        }
+        if (block?.scheduled || block?.deadline) {
           days.set(ts, { hasSch: true })
         }
       }
