@@ -491,6 +491,19 @@ function provideStyles() {
       position: absolute;
       top: 3px;
     }
+    .kef-days-has-task {
+      position: absolute;
+      top: 0;
+      right: 2px;
+      width: 1px;
+      height: 4px;
+      background: var(--ls-active-secondary-color);
+      border-radius: 50%;
+      transform: rotate(45deg);
+    }
+    .kef-days-has-sch {
+      transform: rotate(-45deg) translate(2px, 2px);
+    }
     .kef-days-referred {
       width: 4px;
       height: 4px;

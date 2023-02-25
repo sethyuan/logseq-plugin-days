@@ -19,6 +19,7 @@ import { useEffect, useState } from "preact/hooks"
 import {
   convertDayNumber,
   dashToCamel,
+  dayNumToTs,
   getSettingProps,
   parseContent,
 } from "../libs/utils"
@@ -160,6 +161,7 @@ async function getDays(q, withAll, isCustom, withJournal, month, dateFormat) {
     const days = await getOnlySpecials(month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
+      await fillInTaskDays(days, month, dateFormat)
     }
     return days
   } else {
@@ -168,6 +170,7 @@ async function getDays(q, withAll, isCustom, withJournal, month, dateFormat) {
     const days = await getBlockAndSpecials(block, withAll, month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
+      await fillInTaskDays(days, month, dateFormat)
     }
     return days
   }
@@ -492,14 +495,14 @@ async function fillInJournalDays(days, month, dateFormat) {
   try {
     const result = (
       await logseq.DB.datascriptQuery(`
-      [:find (pull ?p [:block/original-name])
-       :where
-       [?p :block/journal? true]
-       [?p :block/journal-day ?d]
-       [(>= ?d ${start})]
-       [(<= ?d ${end})]
-       [?b :block/page ?p]]
-    `)
+        [:find (pull ?p [:block/original-name])
+         :where
+         [?p :block/journal? true]
+         [?p :block/journal-day ?d]
+         [(>= ?d ${start})]
+         [(<= ?d ${end})]
+         [?b :block/page ?p]]
+      `)
     ).flat()
     for (const journal of result) {
       const ts = parse(journal["original-name"], dateFormat, month).getTime()
@@ -508,6 +511,47 @@ async function fillInJournalDays(days, month, dateFormat) {
         day.contentful = true
       } else {
         days.set(ts, { contentful: true })
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function fillInTaskDays(days, month, dateFormat) {
+  // Also fill in some days of the previous month and some days of the next month.
+  const start = format(addDays(startOfMonth(month), -6), "yyyyMMdd")
+  const end = format(addDays(endOfMonth(month), 6), "yyyyMMdd")
+  try {
+    const result = await logseq.DB.datascriptQuery(`
+        [:find ?d (pull ?b [:block/marker])
+         :where
+         (or-join [?d ?b]
+           (and
+             [?p :block/journal? true]
+             [?p :block/journal-day ?d]
+             [?b :block/page ?p]
+             [?b :block/marker])
+           [?b :block/scheduled ?d]
+           [?b :block/deadline ?d])
+         [(>= ?d ${start})]
+         [(<= ?d ${end})]]
+      `)
+    for (const [dayNum, marker] of result) {
+      const ts = dayNumToTs(dayNum)
+      const day = days.get(ts)
+      if (day != null) {
+        if (marker) {
+          day.hasTask = true
+        } else {
+          day.hasSch = true
+        }
+      } else {
+        if (marker) {
+          days.set(ts, { hasTask: true })
+        } else {
+          days.set(ts, { hasSch: true })
+        }
       }
     }
   } catch (err) {

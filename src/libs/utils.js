@@ -92,3 +92,10 @@ export function convertDayNumber(dayNum) {
   const day = dayNum - year * 10000 - (month + 1) * 100
   return [year, month, day]
 }
+
+export function dayNumToTs(dayNum) {
+  const year = (dayNum / 10000) >> 0
+  const month = (((dayNum - year * 10000) / 100) >> 0) - 1
+  const day = dayNum - year * 10000 - (month + 1) * 100
+  return new Date(year, month, day).getTime()
+}

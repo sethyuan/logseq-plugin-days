@@ -153,6 +153,10 @@ export default function CalendarView({
               >
                 <span>{d.getDate()}</span>
                 {dayData?.contentful && <div class="kef-days-contentful" />}
+                {dayData?.hasTask && <div class="kef-days-has-task" />}
+                {dayData?.hasSch && (
+                  <div class="kef-days-has-task kef-days-has-sch" />
+                )}
                 {dayData?.uuid && <div class="kef-days-referred" />}
               </div>
               {dayData?.properties?.map(({ name, color, jumpKey }) => (

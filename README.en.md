@@ -7,7 +7,7 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 ## Feature Highlights
 
 - Highlight those days that have references to the page or block
-- Indicate those days that have journal content
+- Indicate those days that have tasks (or scheduled/deadline)
 - Jump to the previous/next month with references to the page or block
 - Clicking on a day with reference will take you to that day and block
 - Clicking on any day will jump to that day's journal page
