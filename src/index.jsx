@@ -519,6 +519,7 @@ function provideStyles() {
       font-size: 0.8em;
       cursor: pointer;
       border-radius: 2px;
+      text-align: center;
     }
     .kef-days-prop:hover {
       overflow: initial;
