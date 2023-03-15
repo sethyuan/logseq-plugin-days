@@ -245,6 +245,416 @@ async function main() {
       default: "",
       description: t("End the repeat at the specified date."),
     },
+    {
+      key: "property6",
+      type: "heading",
+      title: t("Property 6"),
+    },
+    {
+      key: "name6",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color6",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat6",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount6",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt6",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property7",
+      type: "heading",
+      title: t("Property 7"),
+    },
+    {
+      key: "name7",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color7",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat7",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount7",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt7",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property8",
+      type: "heading",
+      title: t("Property 8"),
+    },
+    {
+      key: "name8",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color8",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat8",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount8",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt8",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property9",
+      type: "heading",
+      title: t("Property 9"),
+    },
+    {
+      key: "name9",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color9",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat9",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount9",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt9",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property10",
+      type: "heading",
+      title: t("Property 10"),
+    },
+    {
+      key: "name10",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color10",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat10",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount10",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt10",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property11",
+      type: "heading",
+      title: t("Property 11"),
+    },
+    {
+      key: "name11",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color11",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat11",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount11",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt11",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property12",
+      type: "heading",
+      title: t("Property 12"),
+    },
+    {
+      key: "name12",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color12",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat12",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount12",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt12",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property13",
+      type: "heading",
+      title: t("Property 13"),
+    },
+    {
+      key: "name13",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color13",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat13",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount13",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt13",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property14",
+      type: "heading",
+      title: t("Property 14"),
+    },
+    {
+      key: "name14",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color14",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat14",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount14",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt14",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
+    {
+      key: "property15",
+      type: "heading",
+      title: t("Property 15"),
+    },
+    {
+      key: "name15",
+      type: "string",
+      default: "",
+      description: t("Name of the property containing a date as value."),
+    },
+    {
+      key: "color15",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Highlight color."),
+    },
+    {
+      key: "repeat15",
+      type: "string",
+      default: "",
+      description: t(
+        "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.",
+      ),
+    },
+    {
+      key: "repeatCount15",
+      type: "number",
+      default: -1,
+      description: t(
+        "End the repeat after the specified times. -1 means to repeat endlessly.",
+      ),
+    },
+    {
+      key: "repeatEndAt15",
+      type: "string",
+      inputAs: "date",
+      default: "",
+      description: t("End the repeat at the specified date."),
+    },
   ])
 
   logseq.beforeunload(() => {
