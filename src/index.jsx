@@ -812,13 +812,16 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
 
   if (!q || !year) return
 
+  slotEl.style.width = "100%"
+
   logseq.provideUI({
     key: `days-year-${slot}`,
     slot,
-    template: `<div id="${id}"></div>`,
+    template: `<div id="${id}" class="kef-days-yearview-slot"></div>`,
     reset: true,
     style: {
       cursor: "default",
+      width: "100%",
     },
   })
 
@@ -1011,12 +1014,17 @@ function provideStyles() {
     .kef-days-outside {
       opacity: 0.35;
     }
+    .kef-days-yearview-slot {
+      width: 100%;
+    }
     .kef-days-yearview {
       display: grid;
       grid-template-rows: repeat(8, auto);
       grid-template-columns: auto;
       grid-auto-flow: column;
       gap: 3px;
+      width: 100%;
+      overflow-x: auto;
     }
     .kef-days-yearview-day {
       width: 11px;
