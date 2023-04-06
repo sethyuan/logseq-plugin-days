@@ -16,6 +16,7 @@
 - 支持全球化，目前内置了简体中文及英文，欢迎提 PR
 - 一周的开始跟随 Logseq 的设定，请在 Logseq 中修改
 - 支持返回日记页面的自定义查询
+- 年视图，全览有引用的那些天（`/Days (Year View)`）
 
 ## 使用展示
 
@@ -43,8 +44,9 @@ https://user-images.githubusercontent.com/3410293/199194795-d54b5153-76bb-4313-9
 {{renderer :days, @}}
 {{renderer :days, @, all}}
 
-生成没有主题但显示全部特殊日期的事件日历。
-{{renderer :days}}
+年视图，生成指定年份的引用视图。
+{{renderer :days-year, [[page]], 2000}}
+{{renderer :days-year, ((block ref)), 2000}}
 ```
 
 ## 返回日期的高级查询模板

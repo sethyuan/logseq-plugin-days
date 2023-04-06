@@ -15,6 +15,7 @@ Generate a calendar with all days related to a topic highlighted. A topic is eit
 - i18n is supported, Chinese Simplified and English are builtin for now, PR is welcomed
 - The week's start day follows Logseq's settings, feel free to configure it in Logseq
 - Support custom queries that return journal pages as the result
+- Year view, of all those days that have references (`/Days (Year View)`)
 
 ## Usage
 
@@ -42,8 +43,9 @@ Custom query. Result must be journal pages. The query statements must be placed 
 {{renderer :days, @}}
 {{renderer :days, @, all}}
 
-Generate a topicless calendar with all special property dates.
-{{renderer :days}}
+Year view, generate a view of the specified year.
+{{renderer :days-year, [[page]], 2000}}
+{{renderer :days-year, ((block ref)), 2000}}
 ```
 
 ## Template for an advanced query that returns journal pages

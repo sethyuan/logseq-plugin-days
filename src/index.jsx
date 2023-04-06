@@ -5,6 +5,8 @@ import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Calendar from "./comps/Calendar"
+import YearView from "./comps/YearView"
+import { getYearDays } from "./libs/query"
 import zhCN from "./translations/zh-CN.json"
 
 const routeOffHooks = {}
@@ -15,15 +17,34 @@ const CUSTOM = "@"
 const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
 const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
+let weekStart, preferredLanguage, preferredDateFormat
+
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
   provideStyles()
 
+  const configs = await logseq.App.getUserConfigs()
+  weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
+  preferredLanguage = configs.preferredLanguage
+  preferredDateFormat = configs.preferredDateFormat
+  setDefaultOptions({
+    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
+    weekStartsOn: weekStart,
+  })
+
   logseq.App.onMacroRendererSlotted(daysRenderer)
+  logseq.App.onMacroRendererSlotted(yearRenderer)
 
   logseq.Editor.registerSlashCommand("Days", async () => {
     await logseq.Editor.insertAtEditingCursor("{{renderer :days, }}")
+    const input = parent.document.activeElement
+    const pos = input.selectionStart - 2
+    input.setSelectionRange(pos, pos)
+  })
+
+  logseq.Editor.registerSlashCommand("Days (Year View)", async () => {
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days-year, }}")
     const input = parent.document.activeElement
     const pos = input.selectionStart - 2
     input.setSelectionRange(pos, pos)
@@ -762,19 +783,67 @@ async function renderCalendar(
   const el = parent.document.getElementById(id)
   if (el == null) return
 
-  const { preferredLanguage, preferredStartOfWeek, preferredDateFormat } =
-    await logseq.App.getUserConfigs()
-  const weekStart = (+(preferredStartOfWeek ?? 6) + 1) % 7
-  setDefaultOptions({
-    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
-    weekStartsOn: weekStart,
-  })
   render(
     <Calendar
       query={q}
       withAll={withAll}
       isCustom={isCustom}
       withJournal={withJournal}
+      weekStart={weekStart}
+      locale={preferredLanguage}
+      dateFormat={preferredDateFormat}
+    />,
+    el,
+  )
+}
+
+function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
+  const [type] = args
+  if (type.trim() !== ":days-year") return
+
+  const slotEl = parent.document.getElementById(slot)
+  if (!slotEl) return
+  const renderered = slotEl.childElementCount > 0
+  if (renderered) return
+
+  const q = args[1]?.trim()
+  const year = +args[2]?.trim()
+  const id = `kef-days-${slot}`
+
+  if (!q || !year) return
+
+  logseq.provideUI({
+    key: `days-year-${slot}`,
+    slot,
+    template: `<div id="${id}"></div>`,
+    reset: true,
+    style: {
+      cursor: "default",
+    },
+  })
+
+  // Let div root element get generated first.
+  setTimeout(async () => {
+    await renderYearView(
+      id,
+      q.startsWith("[[") || q.startsWith("((")
+        ? q.substring(2, q.length - 2)
+        : q,
+      year,
+    )
+  }, 0)
+}
+
+async function renderYearView(id, q, year) {
+  const el = parent.document.getElementById(id)
+  if (el == null) return
+
+  const days = await getYearDays(q, year, preferredDateFormat)
+
+  render(
+    <YearView
+      days={days}
+      year={year}
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
@@ -941,6 +1010,24 @@ function provideStyles() {
     }
     .kef-days-outside {
       opacity: 0.35;
+    }
+    .kef-days-yearview {
+      display: grid;
+      grid-template-rows: repeat(8, auto);
+      grid-template-columns: auto;
+      grid-auto-flow: column;
+      gap: 3px;
+    }
+    .kef-days-yearview-day {
+      width: 11px;
+      height: 11px;
+      border: 1px solid: var(--ls-border-color);
+      border-radius: 2px;
+      background-color: var(--ls-tertiary-background-color);
+    }
+    .kef-days-yearview-month {
+      grid-row: 1;
+      font-size: 0.875em;
     }
 
     .kef-days-tb-icon {
