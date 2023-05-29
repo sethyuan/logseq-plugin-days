@@ -4,6 +4,7 @@ import {
   format,
   getDay,
   getDaysInMonth,
+  getWeek,
   intlFormat,
   isSameMonth,
   isToday,
@@ -135,11 +136,15 @@ export default function CalendarView({
             </div>
           )
         })}
-        {days.map((d) => {
+        {days.map((d, i) => {
           const dayData = data.get(d.getTime())
+          const isFirstWeekDay = i % 7 === 0
 
           return (
             <div class="kef-days-day">
+              {isFirstWeekDay && (
+                <div className="kef-days-weeknum">{getWeek(d)}</div>
+              )}
               <div
                 class={cls(
                   "kef-days-num",

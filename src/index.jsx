@@ -918,6 +918,7 @@ function provideStyles() {
       grid-auto-rows: 1fr;
       gap: 7px;
       font-size: 0.875em;
+      padding-left: 30px;
     }
     .kef-days-weekday {
       text-align: center;
@@ -928,10 +929,22 @@ function provideStyles() {
     }
     .kef-days-day {
       display: flex;
+      position: relative;
       flex-flow: column nowrap;
       align-items: center;
       width: 36px;
       min-height: 36px;
+    }
+    .kef-days-weeknum {
+      position: absolute;
+      top: 0;
+      left: -20px;
+      width: 18px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 0.875em;
+      opacity: 0.5;
+      text-align: center;
     }
     .kef-days-num {
       width: 30px;
