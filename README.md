@@ -26,7 +26,7 @@ https://user-images.githubusercontent.com/3410293/198977388-af5e7e1c-9fba-4ccb-8
 
 https://user-images.githubusercontent.com/3410293/199194795-d54b5153-76bb-4313-9b87-2c3e34537ac0.mp4
 
-https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62-8b02-d303bb534eaa.mp4
+https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62-8b02-d303bb534eaa
 
 ## 使用示例
 
