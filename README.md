@@ -45,6 +45,8 @@ https://user-images.githubusercontent.com/3410293/199194795-d54b5153-76bb-4313-9
 {{renderer :days, @, all}}
 
 年视图，生成指定年份的引用视图。
+{{renderer :days-year, [[page]]}}
+{{renderer :days-year, ((block ref))}}
 {{renderer :days-year, [[page]], 2000}}
 {{renderer :days-year, ((block ref)), 2000}}
 ```

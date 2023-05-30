@@ -44,6 +44,8 @@ Custom query. Result must be journal pages. The query statements must be placed 
 {{renderer :days, @, all}}
 
 Year view, generate a view of the specified year.
+{{renderer :days-year, [[page]]}}
+{{renderer :days-year, ((block ref))}}
 {{renderer :days-year, [[page]], 2000}}
 {{renderer :days-year, ((block ref)), 2000}}
 ```

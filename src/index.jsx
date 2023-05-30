@@ -5,8 +5,7 @@ import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Calendar from "./comps/Calendar"
-import YearView from "./comps/YearView"
-import { getYearDays } from "./libs/query"
+import Year from "./comps/Year"
 import zhCN from "./translations/zh-CN.json"
 
 const routeOffHooks = {}
@@ -31,6 +30,7 @@ async function main() {
   setDefaultOptions({
     locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
     weekStartsOn: weekStart,
+    firstWeekContainsDate: 6,
   })
 
   logseq.App.onMacroRendererSlotted(daysRenderer)
@@ -807,7 +807,7 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
   if (renderered) return
 
   const q = args[1]?.trim()
-  const year = +args[2]?.trim()
+  const year = +(args[2]?.trim() ?? new Date().getFullYear())
   const id = `kef-days-${slot}`
 
   if (!q || !year) return
@@ -841,12 +841,10 @@ async function renderYearView(id, q, year) {
   const el = parent.document.getElementById(id)
   if (el == null) return
 
-  const days = await getYearDays(q, year, preferredDateFormat)
-
   render(
-    <YearView
-      days={days}
-      year={year}
+    <Year
+      q={q}
+      startingYear={year}
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
@@ -1045,10 +1043,24 @@ function provideStyles() {
       border: 1px solid: var(--ls-border-color);
       border-radius: 2px;
       background-color: var(--ls-tertiary-background-color);
+      cursor: pointer;
     }
     .kef-days-yearview-month {
       grid-row: 1;
       font-size: 0.875em;
+    }
+    .kef-days-yearview-header {
+      display: flex;
+      align-items: center;
+    }
+    .kef-days-yearview-title {
+      flex: 1;
+      text-align: center;
+    }
+    .kef-days-yearview-controls {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
     }
 
     .kef-days-tb-icon {

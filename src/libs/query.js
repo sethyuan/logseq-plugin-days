@@ -67,12 +67,13 @@ export async function getDays(
   }
 }
 
-export async function getYearDays(q, year, dateFormat) {
+export async function getYearData(q, year, dateFormat) {
   const days = new Map()
   const block =
     (await logseq.Editor.getPage(q)) ?? (await logseq.Editor.getBlock(q))
+  const title = block.originalName ?? (await parseContent(block.content))
   await findDays(days, block, dateFormat)
-  return days
+  return [days, title]
 }
 
 async function getOnlySpecials(month, dateFormat) {
