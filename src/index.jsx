@@ -30,7 +30,7 @@ async function main() {
   setDefaultOptions({
     locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
     weekStartsOn: weekStart,
-    firstWeekContainsDate: 6,
+    ...(preferredLanguage === "zh-CN" ? {firstWeekContainsDate: 4} : {})
   })
 
   logseq.App.onMacroRendererSlotted(daysRenderer)
