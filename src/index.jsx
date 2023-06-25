@@ -30,7 +30,7 @@ async function main() {
   setDefaultOptions({
     locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
     weekStartsOn: weekStart,
-    ...(preferredLanguage === "zh-CN" ? {firstWeekContainsDate: 4} : {})
+    firstWeekContainsDate: logseq.settings?.firstWeekContainsDate ?? 1,
   })
 
   logseq.App.onMacroRendererSlotted(daysRenderer)
@@ -61,6 +61,14 @@ async function main() {
   })
 
   logseq.useSettingsSchema([
+    {
+      key: "firstWeekContainsDate",
+      type: "number",
+      default: preferredLanguage === "zh-CN" ? 4 : 1,
+      description: t(
+        "The first week of the year must contain the specified date. Consult your local standard.",
+      ),
+    },
     {
       key: "property1",
       type: "heading",
