@@ -23,44 +23,13 @@ async function main() {
 
   provideStyles()
 
-  const configs = await logseq.App.getUserConfigs()
-  weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
-  preferredLanguage = configs.preferredLanguage
-  preferredDateFormat = configs.preferredDateFormat
-  setDefaultOptions({
-    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
-    weekStartsOn: weekStart,
-    firstWeekContainsDate: logseq.settings?.firstWeekContainsDate ?? 1,
-  })
-
-  logseq.App.onMacroRendererSlotted(daysRenderer)
-  logseq.App.onMacroRendererSlotted(yearRenderer)
-
-  logseq.Editor.registerSlashCommand("Days", async () => {
-    await logseq.Editor.insertAtEditingCursor("{{renderer :days, }}")
-    const input = parent.document.activeElement
-    const pos = input.selectionStart - 2
-    input.setSelectionRange(pos, pos)
-  })
-
-  logseq.Editor.registerSlashCommand("Days (Year View)", async () => {
-    await logseq.Editor.insertAtEditingCursor("{{renderer :days-year, }}")
-    const input = parent.document.activeElement
-    const pos = input.selectionStart - 2
-    input.setSelectionRange(pos, pos)
-  })
-
-  logseq.App.registerPageMenuItem(t("Open Days"), async ({ page }) =>
-    openPageDays(page),
-  )
-  logseq.App.registerUIItem("toolbar", {
-    key: t("open-days"),
-    template: `<a class="kef-days-tb-icon" data-on-click="openDays" title="${t(
-      "Open Days",
-    )}">${TB_ICON}</a>`,
-  })
-
   logseq.useSettingsSchema([
+    {
+      key: "dateFormat",
+      type: "string",
+      default: "",
+      description: t("Leave this empty to use Logseq's date format."),
+    },
     {
       key: "firstWeekContainsDate",
       type: "number",
@@ -686,13 +655,56 @@ async function main() {
     },
   ])
 
+  const settingsOffHook = logseq.onSettingsChanged(onSettingsChanged)
+
+  logseq.App.onMacroRendererSlotted(daysRenderer)
+  logseq.App.onMacroRendererSlotted(yearRenderer)
+
+  logseq.Editor.registerSlashCommand("Days", async () => {
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days, }}")
+    const input = parent.document.activeElement
+    const pos = input.selectionStart - 2
+    input.setSelectionRange(pos, pos)
+  })
+
+  logseq.Editor.registerSlashCommand("Days (Year View)", async () => {
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days-year, }}")
+    const input = parent.document.activeElement
+    const pos = input.selectionStart - 2
+    input.setSelectionRange(pos, pos)
+  })
+
+  logseq.App.registerPageMenuItem(t("Open Days"), async ({ page }) =>
+    openPageDays(page),
+  )
+  logseq.App.registerUIItem("toolbar", {
+    key: t("open-days"),
+    template: `<a class="kef-days-tb-icon" data-on-click="openDays" title="${t(
+      "Open Days",
+    )}">${TB_ICON}</a>`,
+  })
+
   logseq.beforeunload(() => {
+    settingsOffHook()
     for (const off of Object.values(routeOffHooks)) {
       off?.()
     }
   })
 
   console.log("#days loaded")
+}
+
+async function onSettingsChanged() {
+  const configs = await logseq.App.getUserConfigs()
+  weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
+  preferredLanguage = configs.preferredLanguage
+  preferredDateFormat =
+    logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
+  setDefaultOptions({
+    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
+    weekStartsOn: weekStart,
+    firstWeekContainsDate: logseq.settings?.firstWeekContainsDate ?? 1,
+  })
 }
 
 function daysRenderer({ slot, payload: { arguments: args, uuid } }) {

@@ -1,4 +1,5 @@
 {
+  "Leave this empty to use Logseq's date format.": "使用Logseq日期格式这里请留空白。",
   "The first week of the year must contain the specified date. Consult your local standard.": "一年的第一周必须要包含指定的日期。用来决定一年第一周的起始。",
   "Name of the property containing a date as value.": "一个值为日期的属性的名字。",
   "Highlight color.": "高亮颜色。",
