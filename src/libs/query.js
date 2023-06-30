@@ -292,8 +292,6 @@ async function findPropertyDays(
         }
       }
     }
-
-    const value = block.properties[name]?.[0].replace(/^\[\[(.*)\]\]\s*$/, "$1")
   }
 }
 
