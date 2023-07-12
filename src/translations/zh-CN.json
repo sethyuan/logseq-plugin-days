@@ -15,5 +15,7 @@
   "Today": "今天",
   "OK": "确定",
   "Open Days": "打开 Days",
-  "No page detected.": "未检测到页面。"
+  "No page detected.": "未检测到页面。",
+  "Color for Scheduled.": "Scheduled 的颜色。",
+  "Color for Deadline.": "Deadline 的颜色。"
 }

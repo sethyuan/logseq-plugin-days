@@ -39,6 +39,20 @@ async function main() {
       ),
     },
     {
+      key: "scheduledColor",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Color for Scheduled."),
+    },
+    {
+      key: "deadlineColor",
+      type: "string",
+      inputAs: "color",
+      default: "#ffa500",
+      description: t("Color for Deadline."),
+    },
+    {
       key: "property1",
       type: "heading",
       title: t("Property 1"),
@@ -1013,9 +1027,6 @@ function provideStyles() {
       background: var(--ls-active-secondary-color);
       border-radius: 50%;
       transform: rotate(45deg);
-    }
-    .kef-days-has-sch {
-      transform: rotate(-45deg) translate(2px, 2px);
     }
     .kef-days-referred {
       width: 4px;

@@ -11,6 +11,7 @@ import {
   format,
   isBefore,
   isValid,
+  isWithinInterval,
   parse,
   startOfMonth,
 } from "date-fns"
@@ -20,6 +21,7 @@ import {
   dayNumToTs,
   getSettingProps,
   parseContent,
+  parseRepeat,
 } from "../libs/utils"
 
 const UNITS = new Set(["y", "m", "w", "d"])
@@ -52,7 +54,8 @@ export async function getDays(
     const days = await getOnlySpecials(month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
-      await fillInTaskDays(days, month, dateFormat)
+      await fillInTaskDays(days, month)
+      await fillInScheduledDays(days, month)
     }
     return days
   } else {
@@ -61,7 +64,8 @@ export async function getDays(
     const days = await getBlockAndSpecials(block, withAll, month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
-      await fillInTaskDays(days, month, dateFormat)
+      await fillInTaskDays(days, month)
+      await fillInScheduledDays(days, month)
     }
     return days
   }
@@ -416,25 +420,21 @@ async function fillInJournalDays(days, month, dateFormat) {
   }
 }
 
-async function fillInTaskDays(days, month, dateFormat) {
+async function fillInTaskDays(days, month) {
   // Also fill in some days of the previous month and some days of the next month.
   const start = format(addDays(startOfMonth(month), -6), "yyyyMMdd")
   const end = format(addDays(endOfMonth(month), 6), "yyyyMMdd")
   try {
     const result = await logseq.DB.datascriptQuery(`
-        [:find ?d (pull ?b [:block/marker :block/scheduled :block/deadline {:block/page [:block/journal-day]}])
-         :where
-         (or-join [?d ?b]
-           (and
-             [?p :block/journal? true]
-             [?p :block/journal-day ?d]
-             [?b :block/page ?p]
-             [?b :block/marker])
-           [?b :block/scheduled ?d]
-           [?b :block/deadline ?d])
-         [(>= ?d ${start})]
-         [(<= ?d ${end})]]
-      `)
+      [:find ?d (pull ?b [:block/marker {:block/page [:block/journal-day]}])
+        :where
+        [?p :block/journal? true]
+        [?p :block/journal-day ?d]
+        [?b :block/page ?p]
+        [?b :block/marker]
+        [(>= ?d ${start})]
+        [(<= ?d ${end})]]
+    `)
     for (const [dayNum, block] of result) {
       const ts = dayNumToTs(dayNum)
       const day = days.get(ts)
@@ -442,16 +442,58 @@ async function fillInTaskDays(days, month, dateFormat) {
         if (block?.marker && block?.page["journal-day"] === dayNum) {
           day.hasTask = true
         }
-        if (block?.scheduled || block?.deadline) {
-          day.hasSch = true
-        }
       } else {
         if (block?.marker && block?.page["journal-day"] === dayNum) {
           days.set(ts, { hasTask: true })
         }
-        if (block?.scheduled || block?.deadline) {
-          days.set(ts, { hasSch: true })
-        }
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function fillInScheduledDays(days, month) {
+  // Also fill in some days of the previous month and some days of the next month.
+  const start = addDays(startOfMonth(month), -6)
+  const end = addDays(endOfMonth(month), 6)
+  try {
+    const result = await logseq.DB.datascriptQuery(`
+      [:find ?d (pull ?b [:block/scheduled :block/deadline :block/content :block/uuid {:block/page [:block/journal-day]}])
+        :where
+        (or
+          [?b :block/scheduled ?d]
+          [?b :block/deadline ?d])]
+    `)
+    for (const [dayNum, block] of result) {
+      const [y, m, d] = convertDayNumber(dayNum)
+      const date = new Date(y, m, d)
+      const isPage = block["pre-block?"]
+      const page = isPage ? await logseq.Editor.getPage(block.page.id) : null
+      const dayData = {
+        name: isPage ? page.originalName : await parseContent(block.content),
+        color: block.scheduled
+          ? logseq.settings?.scheduledColor
+          : logseq.settings?.deadlineColor,
+        jumpKey: isPage ? page.name : block.uuid,
+      }
+
+      if (isWithinInterval(date, { start, end })) {
+        const props = getProperties(days, date.getTime())
+        props.push(dayData)
+      }
+
+      const repeat = parseRepeat(block.content)
+      if (repeat) {
+        findRecurrenceDays(
+          days,
+          repeat,
+          Infinity,
+          new Date(3000, 11, 31),
+          date,
+          month,
+          dayData,
+        )
       }
     }
   } catch (err) {

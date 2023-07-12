@@ -99,3 +99,14 @@ export function dayNumToTs(dayNum) {
   const day = dayNum - year * 10000 - (month + 1) * 100
   return new Date(year, month, day).getTime()
 }
+
+export function parseRepeat(content) {
+  // sample: \nSCHEDULED: <2022-11-07 Mon 23:18 .+1d>
+  if (!content) return null
+  const match = content.match(
+    /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3} \d{1,2}:\d{1,2})(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
+  )
+  if (!match) return null
+  const [, , repeat] = match
+  return repeat
+}
