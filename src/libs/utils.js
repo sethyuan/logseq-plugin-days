@@ -75,6 +75,12 @@ export async function parseContent(content) {
   // Remove page refs
   content = content.replace(/\[\[([^\]]+)\]\]/g, "$1")
 
+  // Remove marker
+  content = content.replace(
+    /^(?:LATER|NOW|TODO|DOING|DONE|WAITING|CANCELED) /g,
+    "",
+  )
+
   return content.trim()
 }
 

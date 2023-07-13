@@ -463,7 +463,8 @@ async function fillInScheduledDays(days, month) {
         :where
         (or
           [?b :block/scheduled ?d]
-          [?b :block/deadline ?d])]
+          [?b :block/deadline ?d])
+        (not [?b :block/marker ?m] [(contains? #{"DONE" "CANCELLED"} ?m)])]
     `)
     for (const [dayNum, block] of result) {
       const [y, m, d] = convertDayNumber(dayNum)
