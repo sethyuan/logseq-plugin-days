@@ -39,6 +39,14 @@ async function main() {
       ),
     },
     {
+      key: "displayScheduledAndDeadline",
+      type: "boolean",
+      default: true,
+      description: t(
+        "Controls whether you want to display Scheduled and Deadlines on the calendar.",
+      ),
+    },
+    {
       key: "scheduledColor",
       type: "string",
       inputAs: "color",

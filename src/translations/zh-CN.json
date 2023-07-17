@@ -16,6 +16,7 @@
   "OK": "确定",
   "Open Days": "打开 Days",
   "No page detected.": "未检测到页面。",
+  "Controls whether you want to display Scheduled and Deadlines on the calendar.": "是否在日历上显示 Scheduled 和 Deadline。",
   "Color for Scheduled.": "Scheduled 的颜色。",
   "Color for Deadline.": "Deadline 的颜色。"
 }

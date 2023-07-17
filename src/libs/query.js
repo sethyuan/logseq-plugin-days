@@ -55,7 +55,9 @@ export async function getDays(
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
       await fillInTaskDays(days, month)
-      await fillInScheduledDays(days, month)
+      if (logseq.settings?.displayScheduledAndDeadline) {
+        await fillInScheduledDays(days, month)
+      }
     }
     return days
   } else {
@@ -65,7 +67,9 @@ export async function getDays(
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
       await fillInTaskDays(days, month)
-      await fillInScheduledDays(days, month)
+      if (logseq.settings?.displayScheduledAndDeadline) {
+        await fillInScheduledDays(days, month)
+      }
     }
     return days
   }
