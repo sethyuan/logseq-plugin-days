@@ -174,9 +174,8 @@ export default function CalendarView({
                       color,
                       backgroundColor: Color(color).lightness(90).string(),
                     }}
-                  >
-                    {name}
-                  </div>
+                    dangerouslySetInnerHTML={{ __html: name }}
+                  ></div>
                 </div>
               ))}
             </div>

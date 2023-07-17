@@ -39,7 +39,10 @@ export default function Year({
   return (
     <>
       <section class="kef-days-yearview-header">
-        <div class="kef-days-yearview-title">{title}</div>
+        <div
+          class="kef-days-yearview-title"
+          dangerouslySetInnerHTML={{ __html: title }}
+        ></div>
         <div class="kef-days-yearview-controls">
           <button class="kef-days-control-icon" onClick={onPrev}>
             <PrevIcon />
