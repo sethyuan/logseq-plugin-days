@@ -896,7 +896,9 @@ async function renderYearView(id, q, year) {
 }
 
 function provideStyles() {
-  logseq.provideStyle(`
+  logseq.provideStyle({
+    key: "kef-days",
+    style: `
     .kef-days-header {
       display: flex;
       justify-content: space-between;
@@ -1045,21 +1047,34 @@ function provideStyles() {
       bottom: 2px;
     }
     .kef-days-prop {
-      overflow: hidden;
-      white-space: nowrap;
+      position: relative;
       width: 100%;
       font-size: 0.8em;
       cursor: pointer;
-      border-radius: 2px;
-      text-align: center;
     }
-    .kef-days-prop:hover {
-      overflow: initial;
-      z-index: var(--ls-z-index-level-1);
+    .kef-days-prop-placeholder {
+      display: none;
     }
     .kef-days-prop-text {
       padding: 0 2px;
       border-radius: 2px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .kef-days-prop:hover .kef-days-prop-placeholder {
+      display: inline;
+    }
+    .kef-days-prop:hover .kef-days-prop-text {
+      overflow: initial;
+      white-space: initial;
+      width: max-content;
+      max-width: 200px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: var(--ls-z-index-level-1);
+      text-align: left;
     }
     .kef-days-outside {
       opacity: 0.35;
@@ -1119,7 +1134,8 @@ function provideStyles() {
     .kef-days-tb-icon:hover {
       background: var(--ls-tertiary-background-color);
     }
-  `)
+    `,
+  })
 }
 
 async function openPageDays(pageName) {

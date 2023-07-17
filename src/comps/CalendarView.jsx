@@ -167,7 +167,8 @@ export default function CalendarView({
                   class="kef-days-prop"
                   onClick={() => onGotoPropertyOrigin(jumpKey)}
                 >
-                  <span
+                  <span class="kef-days-prop-placeholder">&lrm;</span>
+                  <div
                     class="kef-days-prop-text"
                     style={{
                       color,
@@ -175,7 +176,7 @@ export default function CalendarView({
                     }}
                   >
                     {name}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
