@@ -981,10 +981,10 @@ function provideStyles() {
       position: absolute;
       top: 0;
       left: -20px;
-      width: 18px;
+      width: auto;
       height: 30px;
       line-height: 30px;
-      font-size: 0.875em;
+      font-size: 0.75em;
       opacity: 0.5;
       text-align: center;
     }

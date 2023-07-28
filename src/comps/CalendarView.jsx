@@ -143,7 +143,7 @@ export default function CalendarView({
           return (
             <div class="kef-days-day">
               {isFirstWeekDay && (
-                <div className="kef-days-weeknum">{getWeek(d)}</div>
+                <div className="kef-days-weeknum">w{getWeek(d)}</div>
               )}
               <div
                 class={cls(
