@@ -875,11 +875,12 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
         ? q.substring(2, q.length - 2)
         : q,
       year,
+      uuid,
     )
   }, 0)
 }
 
-async function renderYearView(id, q, year) {
+async function renderYearView(id, q, year, uuid) {
   const el = parent.document.getElementById(id)
   if (el == null) return
 
@@ -890,6 +891,7 @@ async function renderYearView(id, q, year) {
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
+      uuid={uuid}
     />,
     el,
   )
@@ -1115,6 +1117,13 @@ function provideStyles() {
       flex: 0 0 auto;
       display: flex;
       align-items: center;
+    }
+    .kef-days-control-edit {
+      flex: 0 0 auto;
+      font-family: "tabler-icons";
+      line-height: 24px;
+      padding: 0;
+      margin-left: 0.5em;
     }
 
     .kef-days-tb-icon {

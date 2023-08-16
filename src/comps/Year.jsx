@@ -10,6 +10,7 @@ export default function Year({
   weekStart,
   locale,
   dateFormat,
+  uuid,
 }) {
   const [days, setDays] = useState()
   const [title, setTitle] = useState()
@@ -28,6 +29,10 @@ export default function Year({
 
   function onNext(e) {
     refresh(year + 1)
+  }
+
+  async function onEdit(e) {
+    await logseq.Editor.editBlock(uuid)
   }
 
   useEffect(() => {
@@ -50,6 +55,12 @@ export default function Year({
           <span>{year}</span>
           <button class="kef-days-control-icon" onClick={onNext}>
             <NextIcon />
+          </button>
+          <button
+            class="kef-days-control-icon kef-days-control-edit"
+            onClick={onEdit}
+          >
+            &#xeb04;
           </button>
         </div>
       </section>
