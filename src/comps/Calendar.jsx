@@ -5,6 +5,7 @@ import { getDays } from "../libs/query"
 import CalendarView from "./CalendarView"
 
 export default function Calendar({
+  uuid,
   query,
   withAll,
   isCustom,
@@ -101,6 +102,7 @@ export default function Calendar({
 
   return (
     <CalendarView
+      uuid={uuid}
       weekStart={weekStart}
       locale={locale}
       data={days}

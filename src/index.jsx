@@ -755,9 +755,9 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   // Let div root element get generated first.
   setTimeout(async () => {
     if (q === DYNAMIC) {
-      observeRoute(id)
+      observeRoute(uuid, id)
       const name = await getCurrentPageName()
-      await renderCalendar(id, name, true, false, true)
+      await renderCalendar(uuid, id, name, true, false, true)
     } else if (q === CUSTOM) {
       const block = await logseq.Editor.getBlock(uuid, {
         includeChildren: true,
@@ -767,12 +767,13 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
         ?.filter((_, i) => i > 0 && i < lines.length - 1)
         .join("\n")
       if (query) {
-        await renderCalendar(id, query, withAll === "all", true)
+        await renderCalendar(uuid, id, query, withAll === "all", true)
       } else {
-        await renderCalendar(id, null, true)
+        await renderCalendar(uuid, id, null, true)
       }
     } else {
       await renderCalendar(
+        uuid,
         id,
         q.startsWith("[[") || q.startsWith("((")
           ? q.substring(2, q.length - 2)
@@ -783,7 +784,7 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   }, 0)
 }
 
-function observeRoute(id) {
+function observeRoute(uuid, id) {
   if (routeOffHooks[id] == null) {
     routeOffHooks[id] = logseq.App.onRouteChanged(
       async ({ path, template }) => {
@@ -798,9 +799,9 @@ function observeRoute(id) {
           const name = decodeURIComponent(
             path.substring("/page/".length).toLowerCase(),
           )
-          await renderCalendar(id, name, true, false, true)
+          await renderCalendar(uuid, id, name, true, false, true)
         } else {
-          await renderCalendar(id, null, true, false, true)
+          await renderCalendar(uuid, id, null, true, false, true)
         }
       },
     )
@@ -816,6 +817,7 @@ async function getCurrentPageName() {
 }
 
 async function renderCalendar(
+  uuid,
   id,
   q,
   withAll = false,
@@ -827,6 +829,7 @@ async function renderCalendar(
 
   render(
     <Calendar
+      uuid={uuid}
       query={q}
       withAll={withAll}
       isCustom={isCustom}

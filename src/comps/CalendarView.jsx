@@ -25,6 +25,7 @@ import RefreshIcon from "../icons/RefreshIcon"
 import { mapRange } from "../libs/utils"
 
 export default function CalendarView({
+  uuid,
   weekStart,
   locale,
   data,
@@ -76,6 +77,10 @@ export default function CalendarView({
     onGotoJournal(d, e.shiftKey)
   }
 
+  async function onEdit(e) {
+    await logseq.Editor.editBlock(uuid)
+  }
+
   return (
     <div class="kef-days-calendar" onMouseDown={allowClick}>
       <header class="kef-days-header">
@@ -115,6 +120,12 @@ export default function CalendarView({
           </button>
           <button class="kef-days-control-icon" onClick={onNextRef}>
             <NextEventIcon />
+          </button>
+          <button
+            class="kef-days-control-icon kef-days-control-edit"
+            onClick={onEdit}
+          >
+            &#xeb04;
           </button>
         </div>
       </header>
