@@ -64,6 +64,14 @@ https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62
  [?j :block/journal? true]]
 ```
 
+## 自定义日历宽度
+
+```css
+.kef-days-day {
+  width: 36px;
+}
+```
+
 ## Buy me a coffee
 
 如果您认为我所开发的软件对您有所帮助，并且愿意给予肯定和支持，不妨扫描下方的二维码进行打赏。感谢您的支持与关注。

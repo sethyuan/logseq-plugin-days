@@ -63,6 +63,14 @@ Year view, generate a view of the specified year.
  [?j :block/journal? true]]
 ```
 
+## Customizing calendar width
+
+```css
+.kef-days-day {
+  width: 36px;
+}
+```
+
 ## Buy me a coffee
 
 If you think the software I have developed is helpful to you and would like to give recognition and support, you may buy me a coffee using following link. Thank you for your support and attention.
