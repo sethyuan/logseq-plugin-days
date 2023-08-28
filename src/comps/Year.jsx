@@ -17,6 +17,8 @@ export default function Year({
   const [year, setYear] = useState(startingYear)
 
   async function refresh(year) {
+    if (!q) return
+
     const [days, title] = await getYearData(q, year, dateFormat)
     setTitle(title)
     setYear(year)

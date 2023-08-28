@@ -683,17 +683,17 @@ async function main() {
   logseq.App.onMacroRendererSlotted(yearRenderer)
 
   logseq.Editor.registerSlashCommand("Days", async () => {
-    await logseq.Editor.insertAtEditingCursor("{{renderer :days, }}")
-    const input = parent.document.activeElement
-    const pos = input.selectionStart - 2
-    input.setSelectionRange(pos, pos)
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days, *}}")
+    // const input = parent.document.activeElement
+    // const pos = input.selectionStart - 2
+    // input.setSelectionRange(pos, pos)
   })
 
   logseq.Editor.registerSlashCommand("Days (Year View)", async () => {
-    await logseq.Editor.insertAtEditingCursor("{{renderer :days-year, }}")
-    const input = parent.document.activeElement
-    const pos = input.selectionStart - 2
-    input.setSelectionRange(pos, pos)
+    await logseq.Editor.insertAtEditingCursor("{{renderer :days-year, *}}")
+    // const input = parent.document.activeElement
+    // const pos = input.selectionStart - 2
+    // input.setSelectionRange(pos, pos)
   })
 
   logseq.App.registerPageMenuItem(t("Open Days"), async ({ page }) =>
@@ -755,7 +755,7 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   // Let div root element get generated first.
   setTimeout(async () => {
     if (q === DYNAMIC) {
-      observeRoute(uuid, id)
+      observeRoute(uuid, id, type)
       const name = await getCurrentPageName()
       await renderCalendar(uuid, id, name, true, false, true)
     } else if (q === CUSTOM) {
@@ -784,7 +784,7 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   }, 0)
 }
 
-function observeRoute(uuid, id) {
+function observeRoute(uuid, id, renderer, year) {
   if (routeOffHooks[id] == null) {
     routeOffHooks[id] = logseq.App.onRouteChanged(
       async ({ path, template }) => {
@@ -799,8 +799,12 @@ function observeRoute(uuid, id) {
           const name = decodeURIComponent(
             path.substring("/page/".length).toLowerCase(),
           )
-          await renderCalendar(uuid, id, name, true, false, true)
-        } else {
+          if (renderer === ":days-year") {
+            await renderYearView(id, name, year, uuid)
+          } else {
+            await renderCalendar(uuid, id, name, true, false, true)
+          }
+        } else if (renderer !== ":days-year") {
           await renderCalendar(uuid, id, null, true, false, true)
         }
       },
@@ -872,14 +876,20 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
 
   // Let div root element get generated first.
   setTimeout(async () => {
-    await renderYearView(
-      id,
-      q.startsWith("[[") || q.startsWith("((")
-        ? q.substring(2, q.length - 2)
-        : q,
-      year,
-      uuid,
-    )
+    if (q === DYNAMIC) {
+      observeRoute(uuid, id, type, year)
+      const name = await getCurrentPageName()
+      await renderYearView(id, name, year, uuid)
+    } else {
+      await renderYearView(
+        id,
+        q.startsWith("[[") || q.startsWith("((")
+          ? q.substring(2, q.length - 2)
+          : q,
+        year,
+        uuid,
+      )
+    }
   }, 0)
 }
 
