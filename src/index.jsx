@@ -972,7 +972,7 @@ function provideStyles() {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       grid-template-rows: auto;
-      grid-auto-rows: 1fr;
+      grid-auto-rows: auto;
       gap: 7px;
       font-size: 0.875em;
       padding-left: 30px;
