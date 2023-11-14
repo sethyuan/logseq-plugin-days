@@ -1090,6 +1090,7 @@ function provideStyles() {
       transform: translateX(-50%);
       z-index: var(--ls-z-index-level-1);
       text-align: left;
+      box-shadow: 0 0 6px 0;
     }
     .kef-days-outside {
       opacity: 0.35;
