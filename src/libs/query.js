@@ -93,7 +93,7 @@ export async function getEventsToSync(start, end) {
      (or
        [?b :block/scheduled ?d]
        [?b :block/deadline ?d])
-     (not [?b :block/marker ?m] [(contains? #{"DONE" "CANCELLED"} ?m)])
+     (not [?b :block/marker ?m] [(contains? #{"CANCELLED"} ?m)])
      [(>= ?d ?start)]
      [(<= ?d ?end)]]`,
     toLSDate(start),
