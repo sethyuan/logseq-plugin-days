@@ -22,6 +22,7 @@ import {
   getSettingProps,
   parseContent,
   parseRepeat,
+  toLSDate,
 } from "../libs/utils"
 
 const UNITS = new Set(["y", "m", "w", "d"])
@@ -82,6 +83,23 @@ export async function getYearData(q, year, dateFormat) {
   const title = block.originalName ?? (await parseContent(block.content))
   await findDays(days, block, dateFormat)
   return [days, title]
+}
+
+export async function getEventsToSync(start, end) {
+  const result = await logseq.DB.datascriptQuery(
+    `[:find (pull ?b [:block/content :block/uuid])
+     :in $ ?start ?end
+     :where
+     (or
+       [?b :block/scheduled ?d]
+       [?b :block/deadline ?d])
+     (not [?b :block/marker ?m] [(contains? #{"DONE" "CANCELLED"} ?m)])
+     [(>= ?d ?start)]
+     [(<= ?d ?end)]]`,
+    toLSDate(start),
+    toLSDate(end),
+  )
+  return result.flat()
 }
 
 async function getOnlySpecials(month, dateFormat) {

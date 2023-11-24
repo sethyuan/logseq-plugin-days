@@ -1,4 +1,4 @@
-import { parse as parseDate } from "date-fns"
+import { format, parse as parseDate } from "date-fns"
 import { parse as parseMarkdown } from "./marked-renderer.js"
 
 export function dashToCamel(str) {
@@ -115,4 +115,38 @@ export function parseRepeat(content) {
   if (!match) return null
   const [, repeat] = match
   return repeat
+}
+
+export function parseScheduledDate(content) {
+  // sample: \nSCHEDULED: <2022-11-07 Mon 23:18 .+1d>
+  if (!content) return [null, true, null]
+
+  const match = content.match(
+    /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3}(?: (\d{1,2}:\d{1,2}))?)(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
+  )
+  if (!match) return [null, true, null]
+
+  const [, dateStr, timeStr, repeat] = match
+  if (timeStr) {
+    const date = parseDate(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
+    return [date, false, repeat]
+  } else {
+    const date = parseDate(dateStr, "yyyy-MM-dd EEE", new Date())
+    return [date, true, null]
+  }
+}
+
+export function normalizeCalEvents(calEvents) {
+  Object.values(calEvents).forEach((item) => {
+    item.from = new Date(item.from)
+    if (item.to) {
+      item.to = new Date(item.to)
+    }
+    item.allDay = !!item.allDay
+  })
+  return calEvents
+}
+
+export function toLSDate(date) {
+  return format(date, "yyyyMMdd")
 }
