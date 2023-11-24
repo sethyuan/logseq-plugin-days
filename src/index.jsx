@@ -1250,6 +1250,8 @@ const model = {
         const [from, allDay, repeat] = parseScheduledDate(lsEvent.content)
         if (!from) continue
 
+        await persistBlockUUID(uuid)
+
         ret.added[uuid] = {
           from: from.toJSON(),
           to: addHours(from, 1).toJSON(),

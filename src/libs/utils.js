@@ -150,3 +150,9 @@ export function normalizeCalEvents(calEvents) {
 export function toLSDate(date) {
   return format(date, "yyyyMMdd")
 }
+
+export async function persistBlockUUID(uuid) {
+  if (!(await logseq.Editor.getBlockProperty(uuid, "id"))) {
+    await logseq.Editor.upsertBlockProperty(uuid, "id", uuid)
+  }
+}
