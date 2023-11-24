@@ -27,6 +27,8 @@ https://user-images.githubusercontent.com/3410293/199194795-d54b5153-76bb-4313-9
 
 https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62-8b02-d303bb534eaa
 
+https://github.com/sethyuan/logseq-plugin-days/assets/3410293/89417ec4-c2ad-4164-895a-1da5c9e79804
+
 ## Examples
 
 ```
