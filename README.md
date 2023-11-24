@@ -30,6 +30,10 @@ https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62
 
 https://github.com/sethyuan/logseq-plugin-days/assets/3410293/89417ec4-c2ad-4164-895a-1da5c9e79804
 
+> 如您对上面视频演示的同步用 Shortcut（macOS 专用）感兴趣可加我微信购买。
+> 
+> ![image](https://github.com/sethyuan/logseq-plugin-days/assets/3410293/2f7c59cf-1f91-4af9-a3e1-191b83338543)
+
 ## 使用示例
 
 ```
