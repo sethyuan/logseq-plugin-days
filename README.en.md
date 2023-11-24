@@ -29,6 +29,8 @@ https://github.com/sethyuan/logseq-plugin-days/assets/3410293/65010455-02c6-4b62
 
 https://github.com/sethyuan/logseq-plugin-days/assets/3410293/89417ec4-c2ad-4164-895a-1da5c9e79804
 
+> The shortcut demonstrated in the above video can be purchased [here](https://www.buymeacoffee.com/sethyuan/e/186529).
+
 ## Examples
 
 ```
