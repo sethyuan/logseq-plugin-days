@@ -1,6 +1,6 @@
 Usage Instructions:
 
-1. Download the shortcut attached.
+1. Download the shortcut.
 2. Import the shortcut to your Shortcuts app and edit it according to the following screenshots.
 
 <img width="899" alt="image" src="https://github.com/sethyuan/logseq-plugin-days/assets/3410293/784463ca-b3e2-439f-a5b3-1bc191b48292">
