@@ -1,5 +1,5 @@
 import "@logseq/libs"
-import { addHours, isEqual, setDefaultOptions } from "date-fns"
+import { addHours, setDefaultOptions } from "date-fns"
 import { zhCN as dateZhCN } from "date-fns/locale"
 import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
@@ -8,7 +8,6 @@ import Calendar from "./comps/Calendar"
 import Year from "./comps/Year"
 import { getEventsToSync } from "./libs/query"
 import {
-  normalizeCalEvents,
   parseContent,
   parseScheduledDate,
   persistBlockUUID,
@@ -1195,70 +1194,23 @@ const model = {
     }
   },
 
-  async eventsToSync(from, to, calEventsJSON) {
+  async eventsToSync(from, to) {
     from = new Date(from)
     to = new Date(to)
-    const calEvents = calEventsJSON
-      ? normalizeCalEvents(JSON.parse(calEventsJSON))
-      : {}
 
-    const lsEvents = (await getEventsToSync(from, to)).reduce((obj, item) => {
-      obj[item.uuid] = item
-      return obj
-    }, {})
+    const lsEvents = await getEventsToSync(from, to)
 
-    const ret = {
-      removed: {},
-      modified: {},
-      added: {},
-    }
+    const ret = {}
 
-    for (const [uuid, calEvent] of Object.entries(calEvents)) {
-      if (lsEvents[uuid] == null) {
-        ret.removed[uuid] = { from: calEvent.from.toJSON() }
-      } else {
-        const lsEvent = lsEvents[uuid]
-        const [from, allDay, repeat] = parseScheduledDate(lsEvent.content)
-        if (!from) {
-          ret.removed[uuid] = { from: calEvent.from.toJSON() }
-        } else {
-          const title = await parseContent(lsEvent.content)
-          if (
-            title !== calEvent.title ||
-            !isEqual(from, calEvent.from) ||
-            allDay !== calEvent.allDay
-          ) {
-            ret.modified[uuid] = {
-              from: calEvent.from.toJSON(),
-            }
-            if (title !== calEvent.title) {
-              ret.modified[uuid].title = title
-            }
-            if (!isEqual(from, calEvent.from)) {
-              ret.modified[uuid].newFrom = from.toJSON()
-              ret.modified[uuid].to = addHours(from, 1).toJSON()
-            }
-            if (allDay !== calEvent.allDay) {
-              ret.modified[uuid].allDay = allDay
-            }
-          }
-        }
-      }
-    }
-
-    for (const [uuid, lsEvent] of Object.entries(lsEvents)) {
-      if (calEvents[uuid] == null) {
-        const [from, allDay, repeat] = parseScheduledDate(lsEvent.content)
-        if (!from) continue
-
-        await persistBlockUUID(uuid)
-
-        ret.added[uuid] = {
-          from: from.toJSON(),
-          to: addHours(from, 1).toJSON(),
-          title: await parseContent(lsEvent.content),
-          allDay,
-        }
+    for (const { uuid, content } of lsEvents) {
+      const [from, allDay, repeat] = parseScheduledDate(content)
+      const title = await parseContent(content)
+      await persistBlockUUID(uuid)
+      ret[uuid] = {
+        title,
+        from: from.toJSON(),
+        to: addHours(from, 1).toJSON(),
+        allDay,
       }
     }
 

@@ -119,20 +119,20 @@ export function parseRepeat(content) {
 
 export function parseScheduledDate(content) {
   // sample: \nSCHEDULED: <2022-11-07 Mon 23:18 .+1d>
-  if (!content) return [null, true, null]
+  if (!content) return [null, 1, null]
 
   const match = content.match(
     /\n\s*(?:SCHEDULED|DEADLINE): \<(\d{4}-\d{1,2}-\d{1,2} [a-z]{3}(?: (\d{1,2}:\d{1,2}))?)(?: [\.\+]\+(\d+[ymwdh]))?\>/i,
   )
-  if (!match) return [null, true, null]
+  if (!match) return [null, 1, null]
 
   const [, dateStr, timeStr, repeat] = match
   if (timeStr) {
     const date = parseDate(dateStr, "yyyy-MM-dd EEE HH:mm", new Date())
-    return [date, false, repeat]
+    return [date, 0, repeat]
   } else {
     const date = parseDate(dateStr, "yyyy-MM-dd EEE", new Date())
-    return [date, true, null]
+    return [date, 1, null]
   }
 }
 
