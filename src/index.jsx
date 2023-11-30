@@ -1072,6 +1072,7 @@ function provideStyles() {
       width: 100%;
       font-size: 0.8em;
       cursor: pointer;
+      margin-bottom: 1px;
     }
     .kef-days-prop-placeholder {
       display: none;
