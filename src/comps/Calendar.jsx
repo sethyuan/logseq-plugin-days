@@ -76,7 +76,8 @@ export default function Calendar({
     const dayData = days.get(d.getTime())
     if (dayData?.uuid) {
       if (openInSidebar) {
-        logseq.Editor.openInRightSidebar(dayData.uuid)
+        const page = await logseq.Editor.getPage(pageName)
+        logseq.Editor.openInRightSidebar(page.uuid)
       } else {
         logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
       }
