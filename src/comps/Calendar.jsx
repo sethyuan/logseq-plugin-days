@@ -1,4 +1,5 @@
 import { addMonths, endOfMonth, format, startOfMonth } from "date-fns"
+import { enUS } from "date-fns/locale"
 import { t } from "logseq-l10n"
 import { useEffect, useState } from "preact/hooks"
 import { getDays } from "../libs/query"
@@ -72,7 +73,7 @@ export default function Calendar({
   }
 
   async function gotoJournal(d, openInSidebar) {
-    const pageName = format(d, dateFormat)
+    const pageName = format(d, dateFormat, { locale: enUS })
     const dayData = days.get(d.getTime())
     if (dayData?.uuid) {
       if (openInSidebar) {
