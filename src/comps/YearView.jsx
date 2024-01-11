@@ -1,4 +1,5 @@
 import { addDays, format, getWeek } from "date-fns"
+import { enUS } from "date-fns/locale"
 import { mod } from "jsutils"
 
 export default function YearView({
@@ -56,7 +57,7 @@ export default function YearView({
         )
       })}
       {data.map((d, i) => {
-        const pageName = format(d, dateFormat)
+        const pageName = format(d, dateFormat, { locale: enUS })
         const dayData = days.get(d.getTime())
         let style = null
         if (dayData?.uuid) {

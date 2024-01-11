@@ -24,6 +24,7 @@ import {
   parseRepeat,
   toLSDate,
 } from "../libs/utils"
+import { enUS } from "date-fns/locale"
 
 const UNITS = new Set(["y", "m", "w", "d"])
 
@@ -226,7 +227,7 @@ async function findPropertyDaysForBlock(
       value = value.replace(/^\[\[(.*)\]\]\s*$/, "$1")
       let date
       try {
-        date = parse(value, dateFormat, new Date())
+        date = parse(value, dateFormat, new Date(), { locale: enUS })
         if (!isValid(date)) return
       } catch (err) {
         // ignore this block because it has no valid date value.
@@ -294,7 +295,7 @@ async function findPropertyDays(
         value = value.replace(/^\[\[(.*)\]\]\s*$/, "$1")
         let date
         try {
-          date = parse(value, dateFormat, new Date())
+          date = parse(value, dateFormat, new Date(), { locale: enUS })
           if (!isValid(date)) continue
         } catch (err) {
           // ignore this block because it has no valid date value.
@@ -429,7 +430,9 @@ async function fillInJournalDays(days, month, dateFormat) {
       `)
     ).flat()
     for (const journal of result) {
-      const ts = parse(journal["original-name"], dateFormat, month).getTime()
+      const ts = parse(journal["original-name"], dateFormat, month, {
+        locale: enUS,
+      }).getTime()
       const day = days.get(ts)
       if (day != null) {
         day.contentful = true
