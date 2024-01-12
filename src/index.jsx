@@ -683,7 +683,8 @@ async function main() {
     },
   ])
 
-  const settingsOffHook = logseq.onSettingsChanged(onSettingsChanged)
+  const graphChangeHook = logseq.App.onCurrentGraphChanged(refreshConfigs)
+  const settingsOffHook = logseq.onSettingsChanged(refreshConfigs)
 
   logseq.App.onMacroRendererSlotted(daysRenderer)
   logseq.App.onMacroRendererSlotted(yearRenderer)
@@ -714,6 +715,7 @@ async function main() {
 
   logseq.beforeunload(() => {
     settingsOffHook()
+    graphChangeHook()
     for (const off of Object.values(routeOffHooks)) {
       off?.()
     }
@@ -722,7 +724,7 @@ async function main() {
   console.log("#days loaded")
 }
 
-async function onSettingsChanged() {
+async function refreshConfigs() {
   const configs = await logseq.App.getUserConfigs()
   weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
   preferredLanguage = configs.preferredLanguage
