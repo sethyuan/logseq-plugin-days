@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-days",
-  "version": "0.16.9",
+  "version": "0.17.0",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-days",

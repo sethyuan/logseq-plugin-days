@@ -865,6 +865,7 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
 
   const q = args[1]?.trim()
   const year = +(args[2]?.trim() ?? new Date().getFullYear())
+  const title = args[3]?.trim()
   const id = `kef-days-${slot}`
 
   if (!q || !year) return
@@ -888,6 +889,19 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
       observeRoute(uuid, id, type, year)
       const name = await getCurrentPageName()
       await renderYearView(id, name, year, uuid)
+    } else if (q === CUSTOM) {
+      const block = await logseq.Editor.getBlock(uuid, {
+        includeChildren: true,
+      })
+      const lines = block.children[0]?.content?.split("\n")
+      const query = lines
+        ?.filter((_, i) => i > 0 && i < lines.length - 1)
+        .join("\n")
+      if (query) {
+        await renderYearView(id, query, year, uuid, title, true)
+      } else {
+        await renderYearView(id, null, year, uuid, title, true)
+      }
     } else {
       await renderYearView(
         id,
@@ -901,13 +915,15 @@ function yearRenderer({ slot, payload: { arguments: args, uuid } }) {
   }, 0)
 }
 
-async function renderYearView(id, q, year, uuid) {
+async function renderYearView(id, q, year, uuid, title, isCustom = false) {
   const el = parent.document.getElementById(id)
   if (el == null) return
 
   render(
     <Year
       q={q}
+      userTitle={title}
+      isCustom={isCustom}
       startingYear={year}
       weekStart={weekStart}
       locale={preferredLanguage}

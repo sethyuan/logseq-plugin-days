@@ -1,11 +1,13 @@
 import { useEffect, useState } from "preact/hooks"
 import NextIcon from "../icons/NextIcon"
 import PrevIcon from "../icons/PrevIcon"
-import { getYearData } from "../libs/query"
+import { getYearData, getYearDataFromQuery } from "../libs/query"
 import YearView from "./YearView"
 
 export default function Year({
   q,
+  userTitle,
+  isCustom,
   startingYear,
   weekStart,
   locale,
@@ -19,10 +21,16 @@ export default function Year({
   async function refresh(year) {
     if (!q) return
 
-    const [days, title] = await getYearData(q, year, dateFormat)
-    setTitle(title)
+    if (isCustom) {
+      const days = await getYearDataFromQuery(q, year, dateFormat)
+      setTitle(userTitle ?? "")
+      setDays(days)
+    } else {
+      const [days, blockTitle] = await getYearData(q, year, dateFormat)
+      setTitle(userTitle ?? blockTitle)
+      setDays(days)
+    }
     setYear(year)
-    setDays(days)
   }
 
   function onPrev(e) {

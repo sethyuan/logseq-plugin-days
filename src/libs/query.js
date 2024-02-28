@@ -15,6 +15,7 @@ import {
   parse,
   startOfMonth,
 } from "date-fns"
+import { enUS } from "date-fns/locale"
 import {
   convertDayNumber,
   dashToCamel,
@@ -24,7 +25,6 @@ import {
   parseRepeat,
   toLSDate,
 } from "../libs/utils"
-import { enUS } from "date-fns/locale"
 
 const UNITS = new Set(["y", "m", "w", "d"])
 
@@ -84,6 +84,28 @@ export async function getYearData(q, year, dateFormat) {
   const title = block.originalName ?? (await parseContent(block.content))
   await findDays(days, block, dateFormat)
   return [days, title]
+}
+
+export async function getYearDataFromQuery(q, year, dateFormat) {
+  const days = new Map()
+
+  try {
+    const journals = (await logseq.DB.datascriptQuery(q))
+      .filter(([j, b]) => j?.["journal-day"] && b?.uuid)
+      .map(([journal, block]) => ({ ...journal, ...block }))
+
+    for (const journal of journals) {
+      const date = new Date(...convertDayNumber(journal["journal-day"]))
+      const ts = date.getTime()
+      if (!days.has(ts)) {
+        days.set(ts, { uuid: journal.uuid })
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
+
+  return days
 }
 
 export async function getEventsToSync(start, end) {
