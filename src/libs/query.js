@@ -21,6 +21,7 @@ import {
   dashToCamel,
   dayNumToTs,
   getSettingProps,
+  isUUID,
   parseContent,
   parseRepeat,
   toLSDate,
@@ -63,8 +64,12 @@ export async function getDays(
     }
     return days
   } else {
-    const block =
-      (await logseq.Editor.getPage(q)) ?? (await logseq.Editor.getBlock(q))
+    let block = await logseq.Editor.getPage(q)
+    if (isUUID(q))
+      block = await logseq.Editor.getBlock(q)
+    if (!block)
+      return new Map()
+
     const days = await getBlockAndSpecials(block, withAll, month, dateFormat)
     if (withJournal) {
       await fillInJournalDays(days, month, dateFormat)
