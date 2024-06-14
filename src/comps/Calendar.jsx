@@ -94,7 +94,7 @@ export default function Calendar({
   }
 
   async function gotoWeek(d, openInSidebar) {
-    const pageName = format(d, weekFormat, { locale: enUS })
+    const pageName = format(d, weekFormat)
     if (openInSidebar) {
       const page = await logseq.Editor.getPage(pageName)
       logseq.Editor.openInRightSidebar(page.uuid)

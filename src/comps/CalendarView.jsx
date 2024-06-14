@@ -99,7 +99,7 @@ export default function CalendarView({
           />
         ) : (
           <button class="kef-days-date" onClick={() => setEditingDate(true)}>
-            {intlFormat(month, { year: "numeric", month: "long" }, { locale })}
+            {intlFormat(month, { year: "numeric", month: "long" }, { locale: locale.code })}
           </button>
         )}
         <div class="kef-days-span" />
@@ -149,7 +149,7 @@ export default function CalendarView({
               {intlFormat(
                 previousDay(month, d),
                 { weekday: "short" },
-                { locale },
+                { locale: locale.code },
               )}
             </div>
           )
@@ -158,13 +158,16 @@ export default function CalendarView({
           const dayData = data.get(d.getTime())
           const isFirstWeekDay = i % 7 === 0
 
+          // ISO instead of local week number to avoid inconsistency of week number and year
+          const isoWeek = format(d, "'w'I")
+
           return (
             <div class="kef-days-day">
               {isFirstWeekDay && (
                 <div
                   className="kef-days-weeknum"
                   onClick={(e) => onWeekClick(e, d)}
-                >w{getWeek(d)}</div>
+                >{isoWeek}</div>
               )}
               <div
                 class={cls(
