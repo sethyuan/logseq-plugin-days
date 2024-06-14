@@ -22,7 +22,7 @@ const CUSTOM = "@"
 const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
 const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
-let weekStart, preferredLanguage, preferredDateFormat
+let weekStart, weekFormat, preferredLanguage, preferredDateFormat
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -35,6 +35,12 @@ async function main() {
       type: "string",
       default: "",
       description: t("Leave this empty to use Logseq's date format."),
+    },
+    {
+      key: "weekFormat",
+      type: "string",
+      default: "yyyy-'W'w",
+      description: t("Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. (default: `yyyy-'W'w`)"),
     },
     {
       key: "firstWeekContainsDate",
@@ -730,6 +736,8 @@ async function refreshConfigs() {
   preferredLanguage = configs.preferredLanguage
   preferredDateFormat =
     logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
+  weekFormat =
+    logseq.settings?.weekFormat?.trim()
   setDefaultOptions({
     locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
     weekStartsOn: weekStart,
@@ -849,6 +857,7 @@ async function renderCalendar(
       weekStart={weekStart}
       locale={preferredLanguage}
       dateFormat={preferredDateFormat}
+      weekFormat={weekFormat}
     />,
     el,
   )
@@ -1017,15 +1026,21 @@ function provideStyles() {
       min-height: 36px;
     }
     .kef-days-weeknum {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
       position: absolute;
-      top: 0;
-      left: -20px;
-      width: auto;
-      height: 30px;
-      line-height: 30px;
+      top: 2px;
+      left: -25px;
+      width: 27px;
+      height: 27px;
+      line-height: 27px;
       font-size: 0.75em;
       opacity: 0.5;
       text-align: center;
+    }
+    .kef-days-weeknum:hover {
+      background-color: var(--ls-quaternary-background-color);
     }
     .kef-days-num {
       width: 30px;

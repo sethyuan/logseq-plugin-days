@@ -36,6 +36,7 @@ export default function CalendarView({
   onPrevRef,
   onNextRef,
   onGotoJournal,
+  onGotoWeek,
   onGotoPropertyOrigin,
   onRefresh,
 }) {
@@ -75,6 +76,12 @@ export default function CalendarView({
     e.preventDefault()
     e.stopPropagation()
     onGotoJournal(d, e.shiftKey)
+  }
+
+  function onWeekClick(e, d) {
+    e.preventDefault()
+    e.stopPropagation()
+    onGotoWeek(d, e.shiftKey)
   }
 
   async function onEdit(e) {
@@ -154,7 +161,10 @@ export default function CalendarView({
           return (
             <div class="kef-days-day">
               {isFirstWeekDay && (
-                <div className="kef-days-weeknum">w{getWeek(d)}</div>
+                <div
+                  className="kef-days-weeknum"
+                  onClick={(e) => onWeekClick(e, d)}
+                >w{getWeek(d)}</div>
               )}
               <div
                 class={cls(
