@@ -57,7 +57,7 @@ export default function YearView({
         )
       })}
       {data.map((d, i) => {
-        const pageName = format(d, dateFormat, { locale: enUS })
+        const pageName = format(d, dateFormat, { locale })
         const dayData = days.get(d.getTime())
         let style = null
         if (dayData?.uuid) {

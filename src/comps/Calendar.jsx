@@ -14,6 +14,7 @@ export default function Calendar({
   weekStart,
   locale,
   dateFormat,
+  weekFormat,
 }) {
   const [month, setMonth] = useState(() => new Date())
   const [days, setDays] = useState(null)
@@ -92,6 +93,18 @@ export default function Calendar({
     }
   }
 
+  async function gotoWeek(d, openInSidebar) {
+    if (!weekFormat)
+      return
+    const pageName = format(d, weekFormat)
+    if (openInSidebar) {
+      const page = await logseq.Editor.getPage(pageName)
+      logseq.Editor.openInRightSidebar(page.uuid)
+    } else {
+      logseq.Editor.scrollToBlockInPage(pageName)
+    }
+  }
+
   function gotoPropertyOrigin(key) {
     logseq.Editor.scrollToBlockInPage(key)
   }
@@ -115,6 +128,7 @@ export default function Calendar({
       onPrevRef={findPrev}
       onNextRef={findNext}
       onGotoJournal={gotoJournal}
+      onGotoWeek={weekFormat ? gotoWeek : null}
       onGotoPropertyOrigin={gotoPropertyOrigin}
       onRefresh={refresh}
     />

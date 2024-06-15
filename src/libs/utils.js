@@ -156,3 +156,8 @@ export async function persistBlockUUID(uuid) {
     await logseq.Editor.upsertBlockProperty(uuid, "id", uuid)
   }
 }
+
+export function isUUID(str) {
+    const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+    return !!str.match(regex)
+}

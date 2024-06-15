@@ -4,3 +4,4 @@ dist
 stats.html
 yarn-error.log
 *.mp4
+*.sublime-*

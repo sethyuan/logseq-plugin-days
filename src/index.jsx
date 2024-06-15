@@ -1,6 +1,28 @@
 import "@logseq/libs"
 import { addHours, setDefaultOptions } from "date-fns"
-import { zhCN as dateZhCN } from "date-fns/locale"
+import {
+  enUS as locale_EnUS,
+  fr as locale_Fr,
+  de as locale_De,
+  nl as locale_Nl,
+  zhCN as locale_ZhCN,
+  zhTW as locale_ZhTW,
+  af as locale_Af,
+  es as locale_Es,
+  nb as locale_Nb,
+  pl as locale_Pl,
+  ptBR as locale_PtBR,
+  pt as locale_Pt,
+  ru as locale_Ru,
+  ja as locale_Ja,
+  it as locale_It,
+  tr as locale_Tr,
+  uk as locale_Uk,
+  ko as locale_Ko,
+  sk as locale_Sk,
+  faIR as locale_FaIR,
+  id as locale_Id,
+} from "date-fns/locale"
 import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
@@ -22,7 +44,33 @@ const CUSTOM = "@"
 const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
 const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
-let weekStart, preferredLanguage, preferredDateFormat
+let weekStart, weekFormat, locale, preferredLanguage, preferredDateFormat
+
+const logseqLocalesMap = {
+  // key: logseq language available in UI
+  // value: date-fns locale object
+  'en': locale_EnUS,
+  'fr': locale_Fr,
+  'de': locale_De,
+  'nl': locale_Nl,
+  'zh-CN': locale_ZhCN,
+  'zh-Hant': locale_ZhTW,
+  'af': locale_Af,
+  'es': locale_Es,
+  'nb-NO': locale_Nb,
+  'pl': locale_Pl,
+  'pt-BR': locale_PtBR,
+  'pt-PT': locale_Pt,
+  'ru': locale_Ru,
+  'ja': locale_Ja,
+  'it': locale_It,
+  'tr': locale_Tr,
+  'uk': locale_Uk,
+  'ko': locale_Ko,
+  'sk': locale_Sk,
+  'fa': locale_FaIR,
+  'id': locale_Id,
+}
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -37,9 +85,15 @@ async function main() {
       description: t("Leave this empty to use Logseq's date format."),
     },
     {
+      key: "weekFormat",
+      type: "string",
+      default: "yyyy-'W'I",
+      description: t("Characters inside single quotes '...' will be left intact. Use `II` pattern instead of `I` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'I`)"),
+    },
+    {
       key: "firstWeekContainsDate",
       type: "number",
-      default: preferredLanguage === "zh-CN" ? 4 : 1,
+      default: locale === locale_ZhCN ? 4 : 1,
       description: t(
         "The first week of the year must contain the specified date. Consult your local standard.",
       ),
@@ -727,11 +781,11 @@ async function main() {
 async function refreshConfigs() {
   const configs = await logseq.App.getUserConfigs()
   weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
-  preferredLanguage = configs.preferredLanguage
-  preferredDateFormat =
-    logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
+  locale = logseqLocalesMap[configs.preferredLanguage] || locale_EnUS
+  preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
+  weekFormat = logseq.settings?.weekFormat?.trim()
   setDefaultOptions({
-    locale: preferredLanguage === "zh-CN" ? dateZhCN : undefined,
+    locale: locale,
     weekStartsOn: weekStart,
     firstWeekContainsDate: logseq.settings?.firstWeekContainsDate ?? 1,
   })
@@ -847,8 +901,9 @@ async function renderCalendar(
       isCustom={isCustom}
       withJournal={withJournal}
       weekStart={weekStart}
-      locale={preferredLanguage}
+      locale={locale}
       dateFormat={preferredDateFormat}
+      weekFormat={weekFormat}
     />,
     el,
   )
@@ -926,7 +981,7 @@ async function renderYearView(id, q, year, uuid, title, isCustom = false) {
       isCustom={isCustom}
       startingYear={year}
       weekStart={weekStart}
-      locale={preferredLanguage}
+      locale={locale}
       dateFormat={preferredDateFormat}
       uuid={uuid}
     />,
@@ -1017,15 +1072,23 @@ function provideStyles() {
       min-height: 36px;
     }
     .kef-days-weeknum {
+      aspect-ratio: 1;
+      border-radius: 50%;
       position: absolute;
-      top: 0;
-      left: -20px;
-      width: auto;
-      height: 30px;
-      line-height: 30px;
+      top: 2px;
+      left: -25px;
+      width: 27px;
+      height: 27px;
+      line-height: 27px;
       font-size: 0.75em;
       opacity: 0.5;
       text-align: center;
+    }
+    .kef-days-weeknum.kef-days-clickable {
+      cursor: pointer;
+    }
+    .kef-days-weeknum.kef-days-clickable:hover {
+      background-color: var(--ls-quaternary-background-color);
     }
     .kef-days-num {
       width: 30px;

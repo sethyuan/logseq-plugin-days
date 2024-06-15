@@ -36,6 +36,7 @@ export default function CalendarView({
   onPrevRef,
   onNextRef,
   onGotoJournal,
+  onGotoWeek,
   onGotoPropertyOrigin,
   onRefresh,
 }) {
@@ -77,6 +78,12 @@ export default function CalendarView({
     onGotoJournal(d, e.shiftKey)
   }
 
+  function onWeekClick(e, d) {
+    e.preventDefault()
+    e.stopPropagation()
+    onGotoWeek(d, e.shiftKey)
+  }
+
   async function onEdit(e) {
     await logseq.Editor.editBlock(uuid)
   }
@@ -92,7 +99,7 @@ export default function CalendarView({
           />
         ) : (
           <button class="kef-days-date" onClick={() => setEditingDate(true)}>
-            {intlFormat(month, { year: "numeric", month: "long" }, { locale })}
+            {intlFormat(month, { year: "numeric", month: "long" }, { locale: locale.code })}
           </button>
         )}
         <div class="kef-days-span" />
@@ -142,7 +149,7 @@ export default function CalendarView({
               {intlFormat(
                 previousDay(month, d),
                 { weekday: "short" },
-                { locale },
+                { locale: locale.code },
               )}
             </div>
           )
@@ -151,10 +158,19 @@ export default function CalendarView({
           const dayData = data.get(d.getTime())
           const isFirstWeekDay = i % 7 === 0
 
+          // ISO instead of local week number to avoid inconsistency of week number and year
+          const isoWeek = format(d, "'w'I")
+
           return (
             <div class="kef-days-day">
               {isFirstWeekDay && (
-                <div className="kef-days-weeknum">w{getWeek(d)}</div>
+                <div
+                  class={cls(
+                    "kef-days-weeknum",
+                    !!onGotoWeek && "kef-days-clickable",
+                  )}
+                  onClick={!!onGotoWeek && ((e) => onWeekClick(e, d))}
+                >{isoWeek}</div>
               )}
               <div
                 class={cls(
