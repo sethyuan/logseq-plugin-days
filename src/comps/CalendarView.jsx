@@ -158,9 +158,6 @@ export default function CalendarView({
           const dayData = data.get(d.getTime())
           const isFirstWeekDay = i % 7 === 0
 
-          // ISO instead of local week number to avoid inconsistency of week number and year
-          const isoWeek = format(d, "'w'I")
-
           return (
             <div class="kef-days-day">
               {isFirstWeekDay && (
@@ -170,7 +167,7 @@ export default function CalendarView({
                     !!onGotoWeek && "kef-days-clickable",
                   )}
                   onClick={!!onGotoWeek && ((e) => onWeekClick(e, d))}
-                >{isoWeek}</div>
+                >{format(d, "'w'w")}</div>
               )}
               <div
                 class={cls(
