@@ -65,10 +65,8 @@ export async function getDays(
     return days
   } else {
     let block = await logseq.Editor.getPage(q)
-    if (isUUID(q))
-      block = await logseq.Editor.getBlock(q)
-    if (!block)
-      return new Map()
+    if (isUUID(q)) block = await logseq.Editor.getBlock(q)
+    if (!block) return new Map()
 
     const days = await getBlockAndSpecials(block, withAll, month, dateFormat)
     if (withJournal) {
@@ -95,12 +93,11 @@ export async function getYearDataFromQuery(q, year, dateFormat) {
   const days = new Map()
 
   try {
-    const journals = (await logseq.DB.datascriptQuery(q))
-      .filter(([j, b]) => j?.["journal-day"] && b?.uuid)
-      .map(([journal, block]) => ({ ...journal, ...block }))
+    const res = await logseq.DB.customQuery(q)
+    const journals = res.filter((j) => j?.journalDay)
 
     for (const journal of journals) {
-      const date = new Date(...convertDayNumber(journal["journal-day"]))
+      const date = new Date(...convertDayNumber(journal.journalDay))
       const ts = date.getTime()
       if (!days.has(ts)) {
         days.set(ts, { uuid: journal.uuid })
