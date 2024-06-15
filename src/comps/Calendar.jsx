@@ -94,6 +94,8 @@ export default function Calendar({
   }
 
   async function gotoWeek(d, openInSidebar) {
+    if (!weekFormat)
+      return
     const pageName = format(d, weekFormat)
     if (openInSidebar) {
       const page = await logseq.Editor.getPage(pageName)
@@ -126,7 +128,7 @@ export default function Calendar({
       onPrevRef={findPrev}
       onNextRef={findNext}
       onGotoJournal={gotoJournal}
-      onGotoWeek={gotoWeek}
+      onGotoWeek={weekFormat ? gotoWeek : null}
       onGotoPropertyOrigin={gotoPropertyOrigin}
       onRefresh={refresh}
     />

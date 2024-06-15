@@ -88,7 +88,7 @@ async function main() {
       key: "weekFormat",
       type: "string",
       default: "yyyy-'W'I",
-      description: t("Characters inside single quotes '...' will be left intact. Use `II` pattern instead of `I` to add leading zero for week numbers. (default: `yyyy-'W'I`)"),
+      description: t("Characters inside single quotes '...' will be left intact. Use `II` pattern instead of `I` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'I`)"),
     },
     {
       key: "firstWeekContainsDate",
@@ -1074,7 +1074,6 @@ function provideStyles() {
     .kef-days-weeknum {
       aspect-ratio: 1;
       border-radius: 50%;
-      cursor: pointer;
       position: absolute;
       top: 2px;
       left: -25px;
@@ -1085,7 +1084,10 @@ function provideStyles() {
       opacity: 0.5;
       text-align: center;
     }
-    .kef-days-weeknum:hover {
+    .kef-days-weeknum.kef-days-clickable {
+      cursor: pointer;
+    }
+    .kef-days-weeknum.kef-days-clickable:hover {
       background-color: var(--ls-quaternary-background-color);
     }
     .kef-days-num {

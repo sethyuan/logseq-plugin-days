@@ -165,8 +165,11 @@ export default function CalendarView({
             <div class="kef-days-day">
               {isFirstWeekDay && (
                 <div
-                  className="kef-days-weeknum"
-                  onClick={(e) => onWeekClick(e, d)}
+                  class={cls(
+                    "kef-days-weeknum",
+                    !!onGotoWeek && "kef-days-clickable",
+                  )}
+                  onClick={!!onGotoWeek && ((e) => onWeekClick(e, d))}
                 >{isoWeek}</div>
               )}
               <div
