@@ -44,7 +44,7 @@ const CUSTOM = "@"
 const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
 const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
-let weekStart, weekFormat, locale, preferredLanguage, preferredDateFormat
+let weekStart, weekFormat, weekPageTemplate, locale, preferredLanguage, preferredDateFormat
 
 const logseqLocalesMap = {
   // key: logseq language available in UI
@@ -89,6 +89,11 @@ async function main() {
       type: "string",
       default: "yyyy-'W'I",
       description: t("Characters inside single quotes '...' will be left intact. Use `II` pattern instead of `I` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'I`)"),
+    },
+    {
+      key: "weekPageTemplate",
+      type: "string",
+      description: t("Template name to use for new or empty weekly pages"),
     },
     {
       key: "firstWeekContainsDate",
@@ -784,6 +789,7 @@ async function refreshConfigs() {
   locale = logseqLocalesMap[configs.preferredLanguage] || locale_EnUS
   preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
   weekFormat = logseq.settings?.weekFormat?.trim()
+  weekPageTemplate = logseq.settings?.weekPageTemplate?.trim()
   setDefaultOptions({
     locale: locale,
     weekStartsOn: weekStart,
@@ -904,6 +910,7 @@ async function renderCalendar(
       locale={locale}
       dateFormat={preferredDateFormat}
       weekFormat={weekFormat}
+      weekTemplate={weekPageTemplate}
     />,
     el,
   )
