@@ -77,22 +77,21 @@ export default function Calendar({
 
   async function gotoJournal(d, openInSidebar) {
     const pageName = format(d, dateFormat, { locale: enUS })
-    const dayData = days.get(d.getTime())
-    if (dayData?.uuid) {
-      if (openInSidebar) {
-        const page = await logseq.Editor.getPage(pageName)
+
+    if (openInSidebar) {
+      const page = await logseq.Editor.getPage(pageName)
+      if (page)
         logseq.Editor.openInRightSidebar(page.uuid)
-      } else {
-        logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
-      }
-    } else {
-      if (openInSidebar) {
-        const page = await logseq.Editor.getPage(pageName)
-        logseq.Editor.openInRightSidebar(page.uuid)
-      } else {
-        logseq.Editor.scrollToBlockInPage(pageName)
-      }
+      // else
+        // FIXME: How to _create_ the page and open it in the sidebar via API?
+      return
     }
+
+    const dayData = days.get(d.getTime())
+    if (dayData?.uuid)
+      logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
+    else
+      logseq.Editor.scrollToBlockInPage(pageName)
   }
 
   async function gotoWeek(d, openInSidebar) {
