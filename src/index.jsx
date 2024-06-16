@@ -785,7 +785,7 @@ async function refreshConfigs() {
   preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
   weekFormat = logseq.settings?.weekPageFormat?.trim()
 
-  let firstWeekContainsDate = logseq.settings?.firstWeekContainsDate
+  let firstWeekContainsDate = logseq.settings?.firstWeekContainsDate ?? 0
   if (firstWeekContainsDate == 0)
     firstWeekContainsDate = (
       weekStart === 0 ? 3 :  (
