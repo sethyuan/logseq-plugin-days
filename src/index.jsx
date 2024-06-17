@@ -85,17 +85,17 @@ async function main() {
       description: t("Leave this empty to use Logseq's date format."),
     },
     {
-      key: "weekFormat",
+      key: "weekPageFormat",
       type: "string",
-      default: "yyyy-'W'I",
-      description: t("Characters inside single quotes '...' will be left intact. Use `II` pattern instead of `I` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'I`)"),
+      default: "yyyy-'W'w",
+      description: t("Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)"),
     },
     {
       key: "firstWeekContainsDate",
       type: "number",
       default: locale === locale_ZhCN ? 4 : 1,
       description: t(
-        "The first week of the year must contain the specified date. Consult your local standard.",
+        "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 rule (first Thursday should be in the first week): set it to 4 if your week starts with Mon, 3 if it starts with Sun and 2 if it starts with Sat.",
       ),
     },
     {
@@ -783,7 +783,7 @@ async function refreshConfigs() {
   weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
   locale = logseqLocalesMap[configs.preferredLanguage] || locale_EnUS
   preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
-  weekFormat = logseq.settings?.weekFormat?.trim()
+  weekFormat = logseq.settings?.weekPageFormat?.trim()
   setDefaultOptions({
     locale: locale,
     weekStartsOn: weekStart,
