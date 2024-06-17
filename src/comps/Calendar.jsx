@@ -1,6 +1,7 @@
 import { addMonths, endOfMonth, format, startOfMonth } from "date-fns"
 import { enUS } from "date-fns/locale"
 import { t } from "logseq-l10n"
+import { waitMs } from "jsutils"
 import { useEffect, useState } from "preact/hooks"
 import { getDays } from "../libs/query"
 import CalendarView from "./CalendarView"
@@ -15,6 +16,7 @@ export default function Calendar({
   locale,
   dateFormat,
   weekFormat,
+  weekTemplate,
 }) {
   const [month, setMonth] = useState(() => new Date())
   const [days, setDays] = useState(null)
@@ -75,34 +77,65 @@ export default function Calendar({
 
   async function gotoJournal(d, openInSidebar) {
     const pageName = format(d, dateFormat, { locale: enUS })
+
+    if (openInSidebar) {
+      const page = await logseq.Editor.getPage(pageName)
+      if (page) {
+        logseq.Editor.openInRightSidebar(page.uuid)
+      }
+      // else
+      //   FIXME: How to _create_ the page and open it in the sidebar via API?
+      return
+    }
+
     const dayData = days.get(d.getTime())
     if (dayData?.uuid) {
-      if (openInSidebar) {
-        const page = await logseq.Editor.getPage(pageName)
-        logseq.Editor.openInRightSidebar(page.uuid)
-      } else {
-        logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
-      }
+      logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
     } else {
-      if (openInSidebar) {
-        const page = await logseq.Editor.getPage(pageName)
-        logseq.Editor.openInRightSidebar(page.uuid)
-      } else {
-        logseq.Editor.scrollToBlockInPage(pageName)
-      }
+      logseq.Editor.scrollToBlockInPage(pageName)
     }
   }
 
   async function gotoWeek(d, openInSidebar) {
-    if (!weekFormat)
-      return
+    if (!weekFormat) return
     const pageName = format(d, weekFormat)
+
+    let page = await logseq.Editor.getPage(pageName)
+
+    // FIXME: How to _create_ the page and open it in the sidebar via API?
+    if (openInSidebar && !page) return
+
     if (openInSidebar) {
-      const page = await logseq.Editor.getPage(pageName)
       logseq.Editor.openInRightSidebar(page.uuid)
     } else {
       logseq.Editor.scrollToBlockInPage(pageName)
+
+      // HACK: .getPage does not work if called immediately after .scrollToBlockInPage
+      await waitMs(50)
+      page = await logseq.Editor.getPage(pageName)
     }
+
+    if (!weekTemplate) return
+
+    if (!(await logseq.App.existTemplate(weekTemplate))) {
+      await logseq.UI.showMsg(
+        `Template "${weekTemplate}" does not exist. Create it or change the name in the settings`,
+        "warning",
+        { timeout: 5000 },
+      )
+      return
+    }
+
+    const blocks = await logseq.Editor.getPageBlocksTree(page.uuid)
+    if (blocks.length > 1) return
+    if (blocks.length === 1 && blocks[0].content) return
+
+    let uuid = page.uuid
+    if (blocks.length === 1) {
+      uuid = blocks[0].uuid
+    }
+
+    await logseq.App.insertTemplate(uuid, weekTemplate)
   }
 
   function gotoPropertyOrigin(key) {
