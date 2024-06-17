@@ -80,30 +80,30 @@ export default function Calendar({
 
     if (openInSidebar) {
       const page = await logseq.Editor.getPage(pageName)
-      if (page)
+      if (page) {
         logseq.Editor.openInRightSidebar(page.uuid)
+      }
       // else
-        // FIXME: How to _create_ the page and open it in the sidebar via API?
+      //   FIXME: How to _create_ the page and open it in the sidebar via API?
       return
     }
 
     const dayData = days.get(d.getTime())
-    if (dayData?.uuid)
+    if (dayData?.uuid) {
       logseq.Editor.scrollToBlockInPage(pageName, dayData.uuid)
-    else
+    } else {
       logseq.Editor.scrollToBlockInPage(pageName)
+    }
   }
 
   async function gotoWeek(d, openInSidebar) {
-    if (!weekFormat)
-      return
+    if (!weekFormat) return
     const pageName = format(d, weekFormat)
 
     let page = await logseq.Editor.getPage(pageName)
 
     // FIXME: How to _create_ the page and open it in the sidebar via API?
-    if (openInSidebar && !page)
-      return
+    if (openInSidebar && !page) return
 
     if (openInSidebar) {
       logseq.Editor.openInRightSidebar(page.uuid)
@@ -115,27 +115,25 @@ export default function Calendar({
       page = await logseq.Editor.getPage(pageName)
     }
 
-    if (!weekTemplate)
-      return
+    if (!weekTemplate) return
 
-    if (!( await logseq.App.existTemplate(weekTemplate) )) {
+    if (!(await logseq.App.existTemplate(weekTemplate))) {
       await logseq.UI.showMsg(
         `Template "${weekTemplate}" does not exist. Create it or change the name in the settings`,
-        'warning',
+        "warning",
         { timeout: 5000 },
       )
       return
     }
 
     const blocks = await logseq.Editor.getPageBlocksTree(page.uuid)
-    if (blocks.length > 1)
-      return
-    if (blocks.length === 1 && blocks[0].content)
-      return
+    if (blocks.length > 1) return
+    if (blocks.length === 1 && blocks[0].content) return
 
     let uuid = page.uuid
-    if (blocks.length === 1)
+    if (blocks.length === 1) {
       uuid = blocks[0].uuid
+    }
 
     await logseq.App.insertTemplate(uuid, weekTemplate)
   }
