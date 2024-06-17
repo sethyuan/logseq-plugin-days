@@ -99,7 +99,11 @@ export default function CalendarView({
           />
         ) : (
           <button class="kef-days-date" onClick={() => setEditingDate(true)}>
-            {intlFormat(month, { year: "numeric", month: "long" }, { locale: locale.code })}
+            {intlFormat(
+              month,
+              { year: "numeric", month: "long" },
+              { locale: locale.code },
+            )}
           </button>
         )}
         <div class="kef-days-span" />
@@ -167,7 +171,9 @@ export default function CalendarView({
                     !!onGotoWeek && "kef-days-clickable",
                   )}
                   onClick={!!onGotoWeek && ((e) => onWeekClick(e, d))}
-                >{format(d, "'w'w")}</div>
+                >
+                  w{getWeek(d)}
+                </div>
               )}
               <div
                 class={cls(

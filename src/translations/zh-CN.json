@@ -1,7 +1,8 @@
 {
   "Leave this empty to use Logseq's date format.": "使用Logseq日期格式这里请留空白。",
-  "Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)": "Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)",
-  "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 rule (first Thursday should be in the first week): set it to 4 if your week starts with Mon, 3 if it starts with Sun and 2 if it starts with Sat.": "一年的第一周必须要包含指定的日期。用来决定一年第一周的起始。",
+  "Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)": "单引号内的字符 '...' 将保持不变。使用 `ww` 模式代替 `w` 来为周数补零。留空以禁用周页面。（默认值：`yyyy-'W'w`）",
+  "Template name to use for new or empty weekly pages": "新建或空白周页面使用的模板名称",
+  "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 (first Thursday should be in the first week), set it to 4.": "一年的第一周必须要包含的指定日期，用来决定一年第一周的起始。",
   "Name of the property containing a date as value.": "一个值为日期的属性的名字。",
   "Highlight color.": "高亮颜色。",
   "Repeat interval in days (d), weeks (w), months (m) or years (y), e.g, 2w. Leave it empty if not repeated.": "以天（d）、周（w）、月（m）或年（y）计算的重复间隔，例如 2w。如果没有重复请留空。",
@@ -19,5 +20,6 @@
   "No page detected.": "未检测到页面。",
   "Controls whether you want to display Scheduled and Deadlines on the calendar.": "是否在日历上显示 Scheduled 和 Deadline。",
   "Color for Scheduled.": "Scheduled 的颜色。",
-  "Color for Deadline.": "Deadline 的颜色。"
+  "Color for Deadline.": "Deadline 的颜色。",
+  "Template \"${weekTemplate}\" does not exist. Create it or change the name in the settings": "模板\"${weekTemplate}\"不存在。创建它或在设置中更改名称。"
 }

@@ -1,7 +1,7 @@
 import { addMonths, endOfMonth, format, startOfMonth } from "date-fns"
 import { enUS } from "date-fns/locale"
-import { t } from "logseq-l10n"
 import { waitMs } from "jsutils"
+import { t } from "logseq-l10n"
 import { useEffect, useState } from "preact/hooks"
 import { getDays } from "../libs/query"
 import CalendarView from "./CalendarView"
@@ -119,7 +119,10 @@ export default function Calendar({
 
     if (!(await logseq.App.existTemplate(weekTemplate))) {
       await logseq.UI.showMsg(
-        `Template "${weekTemplate}" does not exist. Create it or change the name in the settings`,
+        t(
+          'Template "${weekTemplate}" does not exist. Create it or change the name in the settings',
+          { weekTemplate },
+        ),
         "warning",
         { timeout: 5000 },
       )

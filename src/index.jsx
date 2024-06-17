@@ -1,27 +1,27 @@
 import "@logseq/libs"
 import { addHours, setDefaultOptions } from "date-fns"
 import {
-  enUS as locale_EnUS,
-  fr as locale_Fr,
-  de as locale_De,
-  nl as locale_Nl,
-  zhCN as locale_ZhCN,
-  zhTW as locale_ZhTW,
   af as locale_Af,
+  de as locale_De,
+  enUS as locale_EnUS,
   es as locale_Es,
-  nb as locale_Nb,
-  pl as locale_Pl,
-  ptBR as locale_PtBR,
-  pt as locale_Pt,
-  ru as locale_Ru,
-  ja as locale_Ja,
+  faIR as locale_FaIR,
+  fr as locale_Fr,
+  id as locale_Id,
   it as locale_It,
+  ja as locale_Ja,
+  ko as locale_Ko,
+  nb as locale_Nb,
+  nl as locale_Nl,
+  pl as locale_Pl,
+  pt as locale_Pt,
+  ptBR as locale_PtBR,
+  ru as locale_Ru,
+  sk as locale_Sk,
   tr as locale_Tr,
   uk as locale_Uk,
-  ko as locale_Ko,
-  sk as locale_Sk,
-  faIR as locale_FaIR,
-  id as locale_Id,
+  zhCN as locale_ZhCN,
+  zhTW as locale_ZhTW,
 } from "date-fns/locale"
 import { waitMs } from "jsutils"
 import { setup, t } from "logseq-l10n"
@@ -44,32 +44,37 @@ const CUSTOM = "@"
 const TB_ICON = `<svg t="1675670224876" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1511" width="200" height="200"><path d="M896 384H128c-17.6 0-32-14.4-32-32s14.4-32 32-32h768c17.6 0 32 14.4 32 32s-14.4 32-32 32z" p-id="1512"></path><path d="M832 928H192c-52.8 0-96-43.2-96-96V224c0-52.8 43.2-96 96-96 17.6 0 32 14.4 32 32s-14.4 32-32 32-32 14.4-32 32v608c0 17.6 14.4 32 32 32h640c17.6 0 32-14.4 32-32V224c0-17.6-14.4-32-32-32s-32-14.4-32-32 14.4-32 32-32c52.8 0 96 43.2 96 96v608c0 52.8-43.2 96-96 96z" p-id="1513"></path><path d="M320 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32zM576 192h-128c-17.6 0-32-14.4-32-32s14.4-32 32-32h128c17.6 0 32 14.4 32 32s-14.4 32-32 32zM704 224c-17.6 0-32-14.4-32-32V128c0-17.6 14.4-32 32-32s32 14.4 32 32v64c0 17.6-14.4 32-32 32z" p-id="1514"></path></svg>`
 const SIDEBAR_CONTENTS_SELECTOR = ".sidebar-item #contents"
 
-let weekStart, weekFormat, weekPageTemplate, locale, preferredLanguage, preferredDateFormat
+let weekStart,
+  weekFormat,
+  weekPageTemplate,
+  locale,
+  preferredLanguage,
+  preferredDateFormat
 
 const logseqLocalesMap = {
   // key: logseq language available in UI
   // value: date-fns locale object
-  'en': locale_EnUS,
-  'fr': locale_Fr,
-  'de': locale_De,
-  'nl': locale_Nl,
-  'zh-CN': locale_ZhCN,
-  'zh-Hant': locale_ZhTW,
-  'af': locale_Af,
-  'es': locale_Es,
-  'nb-NO': locale_Nb,
-  'pl': locale_Pl,
-  'pt-BR': locale_PtBR,
-  'pt-PT': locale_Pt,
-  'ru': locale_Ru,
-  'ja': locale_Ja,
-  'it': locale_It,
-  'tr': locale_Tr,
-  'uk': locale_Uk,
-  'ko': locale_Ko,
-  'sk': locale_Sk,
-  'fa': locale_FaIR,
-  'id': locale_Id,
+  en: locale_EnUS,
+  fr: locale_Fr,
+  de: locale_De,
+  nl: locale_Nl,
+  "zh-CN": locale_ZhCN,
+  "zh-Hant": locale_ZhTW,
+  af: locale_Af,
+  es: locale_Es,
+  "nb-NO": locale_Nb,
+  pl: locale_Pl,
+  "pt-BR": locale_PtBR,
+  "pt-PT": locale_Pt,
+  ru: locale_Ru,
+  ja: locale_Ja,
+  it: locale_It,
+  tr: locale_Tr,
+  uk: locale_Uk,
+  ko: locale_Ko,
+  sk: locale_Sk,
+  fa: locale_FaIR,
+  id: locale_Id,
 }
 
 async function main() {
@@ -88,7 +93,9 @@ async function main() {
       key: "weekPageFormat",
       type: "string",
       default: "yyyy-'W'w",
-      description: t("Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)"),
+      description: t(
+        "Characters inside single quotes '...' will be left intact. Use `ww` pattern instead of `w` to add leading zero for week numbers. Leave empty to disable week pages. (default: `yyyy-'W'w`)",
+      ),
     },
     {
       key: "weekPageTemplate",
@@ -100,7 +107,7 @@ async function main() {
       type: "number",
       default: locale === locale_ZhCN ? 4 : 1,
       description: t(
-        "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 rule (first Thursday should be in the first week): set it to 4 if your week starts with Mon, 3 if it starts with Sun and 2 if it starts with Sat.",
+        "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 (first Thursday should be in the first week), set it to 4.",
       ),
     },
     {
@@ -787,7 +794,8 @@ async function refreshConfigs() {
   const configs = await logseq.App.getUserConfigs()
   weekStart = (+(configs.preferredStartOfWeek ?? 6) + 1) % 7
   locale = logseqLocalesMap[configs.preferredLanguage] || locale_EnUS
-  preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
+  preferredDateFormat =
+    logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
   weekFormat = logseq.settings?.weekPageFormat?.trim()
   weekPageTemplate = logseq.settings?.weekPageTemplate?.trim()
   setDefaultOptions({
