@@ -93,9 +93,9 @@ async function main() {
     {
       key: "firstWeekContainsDate",
       type: "number",
-      default: 0,
+      default: locale === locale_ZhCN ? 4 : 1,
       description: t(
-        "The first week of the year must contain the specified date. Consult your local standard. Use 0 to fallback to ISO 8601 rule: first Thursday should be in the first week.",
+        "The first week of the year must contain the specified date. Consult your local standard. To use ISO 8601 rule (first Thursday should be in the first week): set it to 4 if your week starts with Mon, 3 if it starts with Sun and 2 if it starts with Sat.",
       ),
     },
     {
@@ -784,18 +784,10 @@ async function refreshConfigs() {
   locale = logseqLocalesMap[configs.preferredLanguage] || locale_EnUS
   preferredDateFormat = logseq.settings?.dateFormat?.trim() || configs.preferredDateFormat
   weekFormat = logseq.settings?.weekPageFormat?.trim()
-
-  let firstWeekContainsDate = logseq.settings?.firstWeekContainsDate ?? 0
-  if (firstWeekContainsDate == 0)
-    firstWeekContainsDate = (
-      weekStart === 0 ? 3 :  (
-      weekStart === 1 ? 4 : 2)
-    )  // the goal is to treat week with the first Thursday as first week (ISO 8601)
-
   setDefaultOptions({
     locale: locale,
     weekStartsOn: weekStart,
-    firstWeekContainsDate,
+    firstWeekContainsDate: logseq.settings?.firstWeekContainsDate ?? 1,
   })
 }
 
