@@ -815,7 +815,11 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   if (renderered) return
 
   const q = args[1]?.trim()
-  const withAll = args[2]?.trim()
+  const withAll = args[2]?.trim() === "all"
+  const year = +(args[3]?.trim() ?? new Date().getFullYear())
+  let month = +args[4]?.trim()
+  if (month) month = Math.min(12, Math.max(1, month)) - 1
+  else month = new Date().getMonth()
   const id = `kef-days-${slot}`
 
   logseq.provideUI({
@@ -831,9 +835,9 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
   // Let div root element get generated first.
   setTimeout(async () => {
     if (q === DYNAMIC) {
-      observeRoute(uuid, id, type)
+      observeRoute(uuid, id, type, year, month)
       const name = await getCurrentPageName()
-      await renderCalendar(uuid, id, name, true, false, true)
+      await renderCalendar(uuid, id, name, true, year, month, false, true)
     } else if (q === CUSTOM) {
       const block = await logseq.Editor.getBlock(uuid, {
         includeChildren: true,
@@ -843,9 +847,9 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
         ?.filter((_, i) => i > 0 && i < lines.length - 1)
         .join("\n")
       if (query) {
-        await renderCalendar(uuid, id, query, withAll === "all", true)
+        await renderCalendar(uuid, id, query, withAll, year, month, true)
       } else {
-        await renderCalendar(uuid, id, null, true)
+        await renderCalendar(uuid, id, null, true, year, month)
       }
     } else {
       await renderCalendar(
@@ -854,13 +858,15 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
         q.startsWith("[[") || q.startsWith("((")
           ? q.substring(2, q.length - 2)
           : q,
-        withAll === "all",
+        withAll,
+        year,
+        month,
       )
     }
   }, 0)
 }
 
-function observeRoute(uuid, id, renderer, year) {
+function observeRoute(uuid, id, renderer, year, month) {
   if (routeOffHooks[id] == null) {
     routeOffHooks[id] = logseq.App.onRouteChanged(
       async ({ path, template }) => {
@@ -878,10 +884,10 @@ function observeRoute(uuid, id, renderer, year) {
           if (renderer === ":days-year") {
             await renderYearView(id, name, year, uuid)
           } else {
-            await renderCalendar(uuid, id, name, true, false, true)
+            await renderCalendar(uuid, id, name, true, year, month, false, true)
           }
         } else if (renderer !== ":days-year") {
-          await renderCalendar(uuid, id, null, true, false, true)
+          await renderCalendar(uuid, id, null, true, year, month, false, true)
         }
       },
     )
@@ -901,6 +907,8 @@ async function renderCalendar(
   id,
   q,
   withAll = false,
+  year = undefined,
+  month = undefined,
   isCustom = false,
   withJournal = false,
 ) {
@@ -912,6 +920,8 @@ async function renderCalendar(
       uuid={uuid}
       query={q}
       withAll={withAll}
+      startingYear={year}
+      startingMonth={month}
       isCustom={isCustom}
       withJournal={withJournal}
       weekStart={weekStart}

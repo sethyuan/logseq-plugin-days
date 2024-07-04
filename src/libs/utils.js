@@ -29,8 +29,8 @@ export function getSettingProps() {
           ? parseDate(settings[key], "yyyy-MM-dd", new Date())
           : new Date(3000, 11, 31)
         : k === "repeatCount" && settings[key] < 0
-        ? Infinity
-        : settings[key]
+          ? Infinity
+          : settings[key]
   }
   return ret.filter((p) => p.name)
 }
@@ -158,6 +158,6 @@ export async function persistBlockUUID(uuid) {
 }
 
 export function isUUID(str) {
-    const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-    return !!str.match(regex)
+  const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+  return !!str.match(regex)
 }

@@ -10,6 +10,8 @@ export default function Calendar({
   uuid,
   query,
   withAll,
+  startingYear,
+  startingMonth,
   isCustom,
   withJournal,
   weekStart,
@@ -18,7 +20,9 @@ export default function Calendar({
   weekFormat,
   weekTemplate,
 }) {
-  const [month, setMonth] = useState(() => new Date())
+  const [month, setMonth] = useState(
+    () => new Date(startingYear, startingMonth),
+  )
   const [days, setDays] = useState(null)
 
   async function queryData() {
