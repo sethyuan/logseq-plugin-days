@@ -1,13 +1,13 @@
 {
   "name": "logseq-plugin-days",
-  "version": "0.18.2",
+  "version": "0.19.0",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-days",
     "icon": "./icon.png"
   },
   "scripts": {
-    "build": "npx prettier './src/**/*.(js|jsx)' --check && rollup -c",
+    "build": "rollup -c",
     "style": "npx prettier './src/**/*.(js|jsx)' --write",
     "clean": "rm -rf dist"
   },
