@@ -816,10 +816,11 @@ function daysRenderer({ slot, payload: { arguments: args, uuid } }) {
 
   const q = args[1]?.trim()
   const withAll = args[2]?.trim() === "all"
-  const year = +(args[3]?.trim() ?? new Date().getFullYear())
-  let month = +args[4]?.trim()
-  if (month) month = Math.min(12, Math.max(1, month)) - 1
-  else month = new Date().getMonth()
+  let year = Number(args[3]?.trim())
+  if (Number.isNaN(year)) year = new Date().getFullYear()
+  let month = Number(args[4]?.trim())
+  if (Number.isNaN(month)) month = new Date().getMonth()
+  else month = Math.min(12, Math.max(1, month)) - 1
   const id = `kef-days-${slot}`
 
   logseq.provideUI({
